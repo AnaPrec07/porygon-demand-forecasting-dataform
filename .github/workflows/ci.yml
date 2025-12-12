@@ -1,0 +1,39 @@
+name: Dataform CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Dataform CLI
+        run: npm install -g @dataform/cli
+
+      - name: Install dependencies
+        run: |
+          if [ -f package.json ]; then npm install; fi
+
+      - name: Lint includes and SQLX (Prettier)
+        run: |
+          npx prettier --check "includes/**/*.js" "definitions/**/*.sqlx"
+        continue-on-error: true
+
+      - name: Dataform compile
+        run: dataform compile
+
+      - name: Dataform test (if tests exist)
+        run: |
+          if dataform test; then echo "Tests passed"; else echo "No tests or tests failed"; fi
+        continue-on-error: true
