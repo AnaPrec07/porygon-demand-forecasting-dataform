@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Porygon Pipelines | Enterprise Data Engineering</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>
+  <script>mermaid.initialize({ startOnLoad: true });</script>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Porygon Pipelines | Enterprise Data Engineering</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>
+    <script>mermaid.initialize({ startOnLoad: true });</script>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: #2d3748;
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+      header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 3rem 1rem;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+        margin-bottom: 2rem;
+        color: white;
+      }
+      header h1 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: white;
+      }
+      header p {
+        font-size: 1.1rem;
+        color: #e2e8f0;
+      }
+      section {
+        max-width: 900px;
+        margin: 0 auto 3rem auto;
+        padding: 2rem;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        border: 1px solid #e2e8f0;
+      }
+      h2 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: #4c51bf;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 0.5rem;
+      }
+      a.btn-link {
+        display: inline-block;
+        margin: 0.25rem 0.5rem;
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: white !important;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      a.btn-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      table th, table td {
+        border: 1px solid #e2e8f0;
+        padding: 1rem 0.75rem;
+        text-align: left;
+      }
+      table th {
+        background: linear-gradient(135deg, #4c51bf 0%, #5a67d8 100%);
+        color: white;
+        font-weight: 600;
+      }
+      table tbody tr {
+        background-color: #ffffff;
+      }
+      table tbody tr:nth-child(even) {
+        background-color: #f7fafc;
+      }
+      table tbody tr:hover {
+        background-color: #edf2f7;
+      }
+      .dashboard-links a {
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+      footer {
+        text-align: center;
+        padding: 2rem 1rem;
+        color: #718096;
+        font-size: 0.9rem;
+        background-color: rgba(255, 255, 255, 0.8);
+        margin-top: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+
+  <header>
+    <h1>Foundational ETL and BI Capabilities</h1>
+    <p>Enterprise Data Engineering with Google Dataform</p>
+    <div>
+      <a class="btn btn-link" href="https://github.com/AnaPrec07/porygon-pipelines-dataform" target="_blank">GitHub Repository</a>
+      <a class="btn btn-link" href="https://lookerstudio.google.com/embed/u/0/reporting/224a01ba-2006-4fc4-91ba-c20807589a23/page/Gg3" target="_blank">BI Dashboard</a>
+    </div>
+  </header>
+
+  <section>
+    <h2>Executive Summary</h2>
+    <p>This project solves the <strong>critical business problem of data silos and delayed insights</strong> by implementing a modern, cloud-native data pipeline that transforms raw e-commerce data into actionable business intelligence. Built with <strong>Google Dataform</strong>, <strong>BigQuery</strong>, <strong>Cloud Storage</strong> and <strong>Looker Studio</strong>, it delivers:</p>
+    <ul>
+      <li><strong>Centralized Single Source of Truth (SST)</strong> removing data fragmentation and enabling faster time-to-insight through automated, real-time data processing and self-service analytics.</li>
+      <li><strong>Data accuracy</strong> through comprehensive data quality frameworks ensuring data consistency and providing clarity on data lineage.</li>
+      <li><strong>Efficient operations</strong> through reduced cost via serverless architecture and modular pipeline design.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>The Need Addressed</h2>
+    <p>Before this implementation, the e-commerce company <strong>The Look E-commerce</strong> faced:</p>
+    <ul>
+      <li><strong>Data fragmentation</strong> across multiple systems.</li>
+      <li><strong>Manual, error-prone ETL processes</strong> delaying decision-making.</li>
+      <li><strong>Lack of standardization and clarity on data lineage</strong> causing compliance and trust issues.</li>
+      <li><strong>Scalability bottlenecks</strong> as data volumes grew exponentially.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Technology Stack Rationale</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Description</th>
+          <th>Decision Factor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>BigQuery</strong></td>
+          <td>Serverless data warehouse for storing and querying structured data at petabyte scale using SQL.</td>
+          <td>Performative, Scalable, Cost-efficient, Seamless integration, Supports analytics</td>
+        </tr>
+        <tr>
+          <td><strong>Dataform</strong></td>
+          <td>Data transformation and orchestration tool built for SQL-based pipelines in BigQuery.</td>
+          <td>Git version-control, data lineage clarity, Data Quality Checks & unit testing, Works directly in BigQuery</td>
+        </tr>
+        <tr>
+          <td><strong>Looker Studio</strong></td>
+          <td>Business intelligence (BI) and visualization tool that connects directly to BigQuery.</td>
+          <td>Seamless BigQuery integration, real-time updates</td>
+        </tr>
+        <tr>
+          <td><strong>Cloud Storage</strong></td>
+          <td>Secure, scalable object storage for raw and semi-processed data.</td>
+          <td>Seamless integration with BigQuery, cost-efficient</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Data Model</h2>
+    <pre class="mermaid">
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: #2d3748;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 3rem 1rem;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+      margin-bottom: 2rem;
+      color: white;
+    }
+    header h1 {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: white;
+    }
+    header p {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+    }
+    section {
+      max-width: 900px;
+      margin: 0 auto 3rem auto;
+      padding: 2rem;
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      border: 1px solid #e2e8f0;
+    }
+    h2 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      color: #4c51bf;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 0.5rem;
+    }
+    a.btn-link {
+      display: inline-block;
+      margin: 0.25rem 0.5rem;
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      color: white !important;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    a.btn-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    table th, table td {
+      border: 1px solid #e2e8f0;
+      padding: 1rem 0.75rem;
+      text-align: left;
+    }
+    table th {
+      background: linear-gradient(135deg, #4c51bf 0%, #5a67d8 100%);
+      color: white;
+      font-weight: 600;
+    }
+    table tbody tr {
+      background-color: #ffffff;
+    }
+  </section>
+
+  <section>
+    <h2>Total Cost of Ownership (TCO)</h2>
+    <p>Based on current consumption, this project costs an estimated <strong>$13 per month</strong>.</p>
+  </section>
+
+  <footer>
+    &copy; 2025 Ana Preciado. Built with Google Cloud and Dataform.
+  </footer>
+
+  </body>
+  </html>
+    table tbody tr:nth-child(even) {
+      background-color: #f7fafc;
+    }
+    table tbody tr:hover {
+      background-color: #edf2f7;
+    }
+    .dashboard-links a {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #718096;
+      font-size: 0.9rem;
+      background-color: rgba(255, 255, 255, 0.8);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Foundational ETL and BI Capabilities</h1>
+  <p>Enterprise Data Engineering with Google Dataform</p>
+  <div>
+    <a class="btn btn-link" href="https://github.com/AnaPrec07/porygon-pipelines-dataform" target="_blank">GitHub Repository</a>
+    <a class="btn btn-link" href="https://lookerstudio.google.com/embed/u/0/reporting/224a01ba-2006-4fc4-91ba-c20807589a23/page/Gg3" target="_blank">BI Dashboard</a>
+  </div>
+</header>
+
+<section>
+  <h2>Executive Summary</h2>
+  <p>This project solves the <strong>critical business problem of data silos and delayed insights</strong> by implementing a modern, cloud-native data pipeline that transforms raw e-commerce data into actionable business intelligence. Built with <strong>Google Dataform</strong>, <strong>BigQuery</strong>, <strong>Cloud Storage</strong> and <strong>Looker Studio</strong>, it delivers:</p>
+  <ul>
+    <li><strong>Centralized Single Source of Truth (SST)</strong> removing data fragmentation and enabling faster time-to-insight through automated, real-time data processing and self-service analytics.</li>
+    <li><strong>Data accuracy</strong> through comprehensive data quality frameworks ensuring data consistency and providing clarity on data lineage.</li>
+    <li><strong>Efficient operations</strong> through reduced cost via serverless architecture and modular pipeline design.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>The Need Addressed</h2>
+  <p>Before this implementation, the e-commerce company <strong>The Look E-commerce</strong> faced:</p>
+  <ul>
+    <li><strong>Data fragmentation</strong> across multiple systems.</li>
+    <li><strong>Manual, error-prone ETL processes</strong> delaying decision-making.</li>
+    <li><strong>Lack of standardization and clarity on data lineage</strong> causing compliance and trust issues.</li>
+    <li><strong>Scalability bottlenecks</strong> as data volumes grew exponentially.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Technology Stack Rationale</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Description</th>
+        <th>Decision Factor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>BigQuery</strong></td>
+        <td>Serverless data warehouse for storing and querying structured data at petabyte scale using SQL.</td>
+        <td>Performative, Scalable, Cost-efficient, Seamless integration, Supports analytics</td>
+      </tr>
+      <tr>
+        <td><strong>Dataform</strong></td>
+        <td>Data transformation and orchestration tool built for SQL-based pipelines in BigQuery.</td>
+        <td>Git version-control, data lineage clarity, Data Quality Checks & unit testing, Works directly in BigQuery</td>
+      </tr>
+      <tr>
+        <td><strong>Looker Studio</strong></td>
+        <td>Business intelligence (BI) and visualization tool that connects directly to BigQuery.</td>
+        <td>Seamless BigQuery integration, real-time updates</td>
+      </tr>
+      <tr>
+        <td><strong>Cloud Storage</strong></td>
+        <td>Secure, scalable object storage for raw and semi-processed data.</td>
+        <td>Seamless integration with BigQuery, cost-efficient</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Data Model</h2>
+  <pre class="mermaid">
+erDiagram
+    trx_fct {
+        INTEGER order_id PK
+        INTEGER product_id PK
+        INTEGER inventory_item_id PK
+        INTEGER user_id
+        STRING order_status
+        DATE date
+        STRING product_brand
+        STRING product_category
+        INTEGER user_age
+        STRING user_gender
+        STRING user_country
+        STRING iso_abbreviation
+        NUMERIC sale_price
+        NUMERIC product_cost
+        NUMERIC gross_profit
+        TIMESTAMP processing_timestamp
+    }
+    inventory_dim {
+        INTEGER inventory_item_id PK
+        DATE date_created
+        DATE date_sold
+        TIMESTAMP processing_timestamp
+    }
+    events_fct {
+        INTEGER event_id PK
+        INTEGER user_id
+        INTEGER sequence_number
+        INTEGER session_id
+        DATE date_created
+        STRING traffic_source
+        STRING uri
+        STRING event_type
+        TIMESTAMP processing_timestamp
+    }
+    orders_dim {
+        INTEGER order_id PK
+        STRING status
+        DATE date_created
+        DATE date_returned
+        DATE date_shipped
+        DATE date_delivered
+        INTEGER num_of_item
+        TIME order_processing_time
+        TIME order_transit_time
+        TIME order_lead_time
+        TIMESTAMP processing_timestamp
+    }
+    products_dim {
+        INTEGER product_id PK
+        NUMERIC cost
+        STRING category
+        STRING brand
+        NUMERIC retail_price
+        NUMERIC markup
+        STRING department
+        TIMESTAMP processing_timestamp
+    }
+    users_dim {
+        INTEGER user_id PK
+        INTEGER age
+        STRING gender
+        STRING country
+        STRING traffic_source
+        DATE date_created
+        STRING iso_abbreviation
+        TIMESTAMP processing_timestamp
+    }
+    trx_fct ||--|| orders_dim : "order_id"
+    trx_fct ||--|| products_dim : "product_id"
+    trx_fct ||--|| inventory_dim : "inventory_item_id"
+    trx_fct ||--|| users_dim : "user_id"
+    events_fct ||--|| users_dim : "user_id"
+  </pre>
+</section>
+
+<section>
+  <h2>Total Cost of Ownership (TCO)</h2>
+  <p>Based on current consumption, this project costs an estimated <strong>$13 per month</strong>.</p>
+</section>
+
+<footer>
+  &copy; 2025 Ana Preciado. Built with Google Cloud and Dataform.
+</footer>
+
+</body>
+</html>

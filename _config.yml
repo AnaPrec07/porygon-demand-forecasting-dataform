@@ -1,0 +1,71 @@
+# Site Configuration
+title: "Porygon Pipelines - Dataform Project"
+description: "A modern data pipeline built with Google Dataform for e-commerce analytics"
+author: "Ana Preciado"
+email: your-email@example.com
+baseurl: "/porygon-pipelines-dataform"
+url: "https://anaprec07.github.io"
+
+# GitHub Pages Configuration
+github_username: AnaPrec07
+repository: porygon-pipelines-dataform
+
+# Jekyll Configuration
+markdown: kramdown
+highlighter: rouge
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Custom head includes
+head_scripts:
+  - https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css
+
+# Navigation
+header_pages:
+  - about.md
+  - architecture.md
+  - documentation.md
+
+# Exclude from processing
+exclude:
+  - definitions/
+  - compiled_graph.json
+  - environments.json
+  - schedules.json
+  - workflow_settings.yaml
+  - package.json
+  - node_modules/
+  - vendor/
+  - .DS_Store
+  - Gemfile
+  - Gemfile.lock
+
+# Collections
+collections:
+  projects:
+    output: true
+    permalink: /:collection/:name/
+
+# Default front matter
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      author: "Ana Preciado"
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "page"
+
+# SEO and Social
+twitter_username: your_twitter_handle
+linkedin_username: your_linkedin_username
+
+# Analytics (optional - replace with your tracking ID)
+google_analytics: UA-XXXXXXXX-X

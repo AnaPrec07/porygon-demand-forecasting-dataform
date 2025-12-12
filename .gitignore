@@ -1,0 +1,23 @@
+node_modules/
+
+# macOS
+.DS_Store
+
+# Dataform
+.dataform/
+output/
+logs/
+.cache/
+
+# Environment
+.env
+.env.*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
