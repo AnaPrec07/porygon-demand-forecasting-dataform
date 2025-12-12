@@ -1,0 +1,293 @@
+Table walmart_training_tables.walmart_master_table {
+  ctx_date_month date
+  ctx_cat_id string
+  ctx_dept_id string
+  ctx_item_id string
+  ctx_state_id string
+  ctx_store_id string
+  tgt_monthly_sales float
+  tgt_days_is_zero_sales int
+  tgt_monthly_sales_sum_3_next_months float
+  tgt_monthly_sales_lead_1_months float
+  tgt_monthly_sales_lead_2_months float
+  tgt_monthly_sales_lead_3_months float
+  tgt_days_is_zero_sales_lead_1_months int
+  tgt_days_is_zero_sales_lead_2_months int
+  tgt_days_is_zero_sales_lead_3_months int
+  tgt_days_is_zero_sales_lead_4_months int
+  outlier_threshold_q97 float
+  is_tgt_outlier bool
+  is_outlier_3m_tgt bool
+  is_stockout_month_lag_sale bool
+  is_stockout_month_lead_sale bool
+  fea_max_days_since_last_sale int
+  fea_min_days_to_next_sale int
+  stockout_threshold_q97 float
+}
+
+Table walmart_targets_and_filters.target_store_item_monthly {
+  ctx_date_month date
+  ctx_state_id string
+  ctx_store_id string
+  ctx_cat_id string
+  ctx_dept_id string
+  ctx_item_id string
+  tgt_monthly_sales float
+  tgt_monthly_sales_lead_1_months float
+  tgt_monthly_sales_lead_2_months float
+  tgt_monthly_sales_lead_3_months float
+  tgt_monthly_sales_lead_4_months float
+}
+
+Table walmart_targets_and_filters.daily_sales_melted {
+  ctx_date date
+  daily_sales float
+  state_id string
+  store_id string
+  cat_id string
+  dept_id string
+  item_id string
+}
+
+Table walmart_targets_and_filters.stockout_filter {
+  ctx_store_id string
+  ctx_item_id string
+  ctx_date_month date
+  fea_item_max_days_since_last_sale int
+  is_stockout bool
+  is_stockout_lead_1 bool
+  is_stockout_lead_2 bool
+  is_stockout_lead_3 bool
+}
+
+Table walmart_targets_and_filters.target_outliers_filter {
+  ctx_date_month date
+  ctx_item_id string
+  ctx_store_id string
+  outlier_threshold_q97 float
+  is_tgt_outlier bool
+}
+
+Table walmart_targets_and_filters.stockout_thresholds {
+  ctx_item_id string
+  count_days_with_sales int
+  min_day_with_sales date
+  max_day_with_sales date
+  item_life_months int
+  ratio_sales_during_life float
+  ctx_item_stockout_threshold float
+}
+
+Table walmart_featurestore.autocorrelation_features {
+  ctx_date_month date
+  ctx_item_id string
+  ctx_store_id string
+  fea_autocorrelation_lag1 float
+  fea_autocorrelation_lag2 float
+  fea_autocorrelation_lag3 float
+  fea_autocorrelation_lag4 float
+}
+
+Table walmart_featurestore.calendar_features {
+  ctx_date_month date
+  fea_is_weekend int
+  fea_is_event_1 int
+  fea_is_event_2 int
+  fea_is_sporting_event int
+  fea_is_cultural_event int
+  fea_is_national_event int
+  fea_is_religious_event int
+  fea_is_snap_ca int
+  fea_is_snap_tx int
+  fea_is_snap_wi int
+  fea_month_sin float
+  fea_detrender string
+  fea_is_weekend_3m int
+  fea_is_event_1_3m int
+  fea_is_event_2_3m int
+  fea_is_sporting_event_3m int
+  fea_is_cultural_event_3m int
+  fea_is_national_event_3m int
+  fea_is_snap_ca_3m int
+}
+
+Table walmart_featurestore.dept_sales_correlations {
+  ctx_date_month date
+  ctx_item_id string
+  ctx_store_id string
+  fea_ca1_hobbies1_correlation float
+  fea_ca1_hobbies2_correlation float
+  fea_ca1_household1_correlation float
+  fea_ca1_household2_correlation float
+  fea_ca1_foods1_correlation float
+  fea_ca1_foods2_correlation float
+  fea_ca1_foods3_correlation float
+}
+
+Table walmart_featurestore.economic_indicator_features {
+  ctx_date_month date
+  fea_wi_unemployment_rate float
+  fea_tx_unemployment_rate float
+  fea_ca_unemployment_rate float
+  fea_gas_price_per_gallon float
+}
+
+Table walmart_featurestore.encoded_features {
+  ctx_date_month date
+  ctx_item_id string
+  ctx_store_id string
+  fea_state_id_encoded int
+  fea_cat_id_encoded int
+  fea_dept_id_encoded int
+  fea_store_id_encoded int
+  fea_item_id_encoded int
+}
+
+Table walmart_featurestore.global_rolling_sales_features {
+  ctx_date_month date
+  ctx_state_id string
+  ctx_cat_id string
+  ctx_dept_id string
+  ctx_store_id string
+  fea_ca_monthly_sales float
+  fea_tx_monthly_sales float
+  fea_wi_monthly_sales float
+}
+
+Table walmart_featurestore.historical_stockout_features {
+  ctx_date_month date
+  ctx_item_id string
+  ctx_store_id string
+  last_sale_ff date
+}
+
+Table walmart_featurestore.item_longevity_features {
+  ctx_date_month date
+  ctx_item_id string
+  ctx_store_id string
+  ctx_first_date date
+  fea_month_difference int
+  is_one_year_old bool
+  is_six_months_old bool
+  is_three_months_old bool
+}
+
+Table walmart_featurestore.population_features {
+  ctx_state_id string
+  ctx_date_year int
+  fea_nonfamily_households int
+  fea_family_households int
+  fea_total_pop int
+}
+
+Table walmart_featurestore.price_features_ts {
+  ctx_date_month date
+  ctx_item_id string
+  ctx_store_id string
+}
+
+Table walmart_featurestore.rolling_percent_sales {
+  ctx_date_month date
+  ctx_state_id string
+  ctx_cat_id string
+  ctx_dept_id string
+  ctx_store_id string
+  fea_ca_monthly_sales float
+  fea_tx_monthly_sales float
+  fea_wi_monthly_sales float
+}
+
+Table walmart_featurestore.rolling_sales_features {
+  ctx_date_month date
+  ctx_item_id string
+  ctx_store_id string
+  ctx_state_id string
+  tgt_monthly_sales float
+  tgt_days_is_zero_sales int
+}
+
+Table walmart_featurestore.seasonality_correlation {
+  ctx_date_month date
+  ctx_item_id string
+  ctx_store_id string
+  msev float
+  tgt_monthly_sales_sum_3_next_months float
+  is_stockout_tgt bool
+}
+
+Table walmart_featurestore.trend_correlation_features {
+  ctx_date_month date
+  ctx_item_id string
+  ctx_store_id string
+  msev int
+  x float
+}
+
+Table walmart_featurestore.weather_features {
+  ctx_date_month date
+  ctx_state_id string
+  temp float
+  wdsp float
+  tornado_funnel_cloud float
+  thunder float
+  snow_ice_pellets float
+  rain_drizzle float
+  fog float
+  sndp float
+  prcp float
+  gust float
+  visib float
+  dewp float
+
+  // Relationships
+  Ref: walmart_training_tables.walmart_master_table.ctx_date_month > walmart_targets_and_filters.target_store_item_monthly.ctx_date_month
+  Ref: walmart_training_tables.walmart_master_table.ctx_store_id > walmart_targets_and_filters.target_store_item_monthly.ctx_store_id
+  Ref: walmart_training_tables.walmart_master_table.ctx_item_id > walmart_targets_and_filters.target_store_item_monthly.ctx_item_id
+  Ref: walmart_training_tables.walmart_master_table.ctx_state_id > walmart_targets_and_filters.target_store_item_monthly.ctx_state_id
+  Ref: walmart_training_tables.walmart_master_table.ctx_dept_id > walmart_targets_and_filters.target_store_item_monthly.ctx_dept_id
+  Ref: walmart_training_tables.walmart_master_table.ctx_cat_id > walmart_targets_and_filters.target_store_item_monthly.ctx_cat_id
+
+  Ref: walmart_targets_and_filters.target_store_item_monthly.ctx_date_month > walmart_featurestore.rolling_sales_features.ctx_date_month
+  Ref: walmart_targets_and_filters.target_store_item_monthly.ctx_item_id > walmart_featurestore.rolling_sales_features.ctx_item_id
+  Ref: walmart_targets_and_filters.target_store_item_monthly.ctx_store_id > walmart_featurestore.rolling_sales_features.ctx_store_id
+  Ref: walmart_targets_and_filters.target_store_item_monthly.ctx_state_id > walmart_featurestore.rolling_sales_features.ctx_state_id
+
+  Ref: walmart_featurestore.rolling_sales_features.ctx_date_month > walmart_featurestore.autocorrelation_features.ctx_date_month
+  Ref: walmart_featurestore.rolling_sales_features.ctx_item_id > walmart_featurestore.autocorrelation_features.ctx_item_id
+  Ref: walmart_featurestore.rolling_sales_features.ctx_store_id > walmart_featurestore.autocorrelation_features.ctx_store_id
+
+  Ref: walmart_featurestore.rolling_sales_features.ctx_date_month > walmart_featurestore.dept_sales_correlations.ctx_date_month
+  Ref: walmart_featurestore.rolling_sales_features.ctx_item_id > walmart_featurestore.dept_sales_correlations.ctx_item_id
+  Ref: walmart_featurestore.rolling_sales_features.ctx_store_id > walmart_featurestore.dept_sales_correlations.ctx_store_id
+
+  Ref: walmart_featurestore.rolling_sales_features.ctx_date_month > walmart_featurestore.seasonality_correlation.ctx_date_month
+  Ref: walmart_featurestore.rolling_sales_features.ctx_item_id > walmart_featurestore.seasonality_correlation.ctx_item_id
+  Ref: walmart_featurestore.rolling_sales_features.ctx_store_id > walmart_featurestore.seasonality_correlation.ctx_store_id
+
+  Ref: walmart_featurestore.rolling_sales_features.ctx_date_month > walmart_featurestore.trend_correlation_features.ctx_date_month
+  Ref: walmart_featurestore.rolling_sales_features.ctx_item_id > walmart_featurestore.trend_correlation_features.ctx_item_id
+  Ref: walmart_featurestore.rolling_sales_features.ctx_store_id > walmart_featurestore.trend_correlation_features.ctx_store_id
+
+  Ref: walmart_featurestore.rolling_sales_features.ctx_date_month > walmart_featurestore.encoded_features.ctx_date_month
+  Ref: walmart_featurestore.rolling_sales_features.ctx_item_id > walmart_featurestore.encoded_features.ctx_item_id
+  Ref: walmart_featurestore.rolling_sales_features.ctx_store_id > walmart_featurestore.encoded_features.ctx_store_id
+
+  Ref: walmart_featurestore.rolling_sales_features.ctx_date_month > walmart_featurestore.price_features_ts.ctx_date_month
+  Ref: walmart_featurestore.rolling_sales_features.ctx_item_id > walmart_featurestore.price_features_ts.ctx_item_id
+  Ref: walmart_featurestore.rolling_sales_features.ctx_store_id > walmart_featurestore.price_features_ts.ctx_store_id
+
+  Ref: walmart_featurestore.rolling_sales_features.ctx_date_month > walmart_featurestore.historical_stockout_features.ctx_date_month
+  Ref: walmart_featurestore.rolling_sales_features.ctx_item_id > walmart_featurestore.historical_stockout_features.ctx_item_id
+  Ref: walmart_featurestore.rolling_sales_features.ctx_store_id > walmart_featurestore.historical_stockout_features.ctx_store_id
+
+  Ref: walmart_featurestore.rolling_sales_features.ctx_date_month > walmart_featurestore.item_longevity_features.ctx_date_month
+  Ref: walmart_featurestore.rolling_sales_features.ctx_item_id > walmart_featurestore.item_longevity_features.ctx_item_id
+  Ref: walmart_featurestore.rolling_sales_features.ctx_store_id > walmart_featurestore.item_longevity_features.ctx_store_id
+
+  Ref: walmart_featurestore.rolling_sales_features.ctx_date_month > walmart_featurestore.calendar_features.ctx_date_month
+
+  Ref: walmart_featurestore.rolling_sales_features.ctx_state_id > walmart_featurestore.population_features.ctx_state_id
+
+  Ref: walmart_featurestore.rolling_sales_features.ctx_date_month > walmart_featurestore.weather_features.ctx_date_month
+  Ref: walmart_featurestore.rolling_sales_features.ctx_state_id > walmart_featurestore.weather_features.ctx_state_id
+}
