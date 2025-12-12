@@ -1,0 +1,27 @@
+config {
+  type: "view",
+  schema: "walmart_looker_views",
+  description: "View that reports profit KPIs",
+  tags: ["reporting"],
+}
+
+SELECT 
+    tgt.ctx_state_id,
+    tgt.ctx_store_id,
+    tgt.ctx_cat_id,
+    EXTRACT(YEAR FROM tgt.ctx_date_month) AS ctx_date_year,
+    SUM(tgt.tgt_monthly_sales) AS units_sold,
+    SUM(tgt.tgt_monthly_sales * price.fea_item_price_avg) AS sales_revenue,
+    SUM(tgt.tgt_monthly_sales * price.fea_item_price_avg * 0.1) AS cost_of_goods_sold,
+    SUM(tgt.tgt_monthly_sales * price.fea_item_price_avg * 0.9) AS gross_profit
+
+FROM ${ref("target_store_item_monthly")} tgt
+LEFT JOIN ${ref("price_features_ts")} price
+  ON tgt.ctx_item_id = price.ctx_item_id
+  AND tgt.ctx_store_id = price.ctx_store_id
+  AND tgt.ctx_date_month = price.ctx_date_month
+GROUP BY 
+    tgt.ctx_state_id,
+    tgt.ctx_store_id,
+    tgt.ctx_cat_id,
+    EXTRACT(YEAR FROM tgt.ctx_date_month) 
