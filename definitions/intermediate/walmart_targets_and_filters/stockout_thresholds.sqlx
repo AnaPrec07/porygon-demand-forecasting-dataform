@@ -1,0 +1,56 @@
+config {
+  type: "table",
+  schema: "walmart_targets_and_filters",
+  name: "stockout_thresholds",
+  description: "Stockout thresholds and sales ratios for CA_1 items."
+}
+
+WITH remove_zero_sales_days AS (
+  SELECT 
+    *
+  FROM ${ref("daily_sales_melted")}
+  WHERE daily_sales > 0
+    AND store_id = "CA_1"
+),
+zero_sales_days_diff AS (
+  SELECT 
+    LAG(ctx_date, 1) OVER (PARTITION BY store_id, item_id ORDER BY ctx_date) AS ctx_last_day_sales,
+    DATE_DIFF(ctx_date, LAG(ctx_date, 1) OVER (PARTITION BY store_id, item_id ORDER BY ctx_date), DAY) AS days_since_last_sale,
+    *
+  FROM remove_zero_sales_days
+)
+SELECT 
+  item_id AS ctx_item_id,
+  COUNT(*) AS count_days_with_sales,
+  MIN(ctx_date) AS min_day_with_sales,
+  MAX(ctx_date) AS max_day_with_sales,
+  DATE_DIFF(MAX(ctx_date), MIN(ctx_date), MONTH) AS item_life_months,
+  COUNT(*) / NULLIF(DATE_DIFF(MAX(ctx_date), MIN(ctx_date), MONTH), 0) AS ratio_sales_during_life,
+  APPROX_QUANTILES(days_since_last_sale, 100)[OFFSET(97)] AS ctx_item_stockout_threshold
+FROM zero_sales_days_diff
+GROUP BY item_id
+WITH remove_zero_sales_days AS (
+  SELECT 
+  *
+  FROM `porygon-pipelines.walmart_raw.daily_sales_melted`
+  WHERE daily_sales > 0
+  AND store_id = "CA_1"
+),
+zero_sales_days_diff AS (
+  SELECT 
+    LAG(ctx_date, 1) OVER (PARTITION BY store_id, item_id ORDER BY ctx_date) AS ctx_last_day_sales,
+    DATE_DIFF(ctx_date, LAG(ctx_date, 1) OVER (PARTITION BY store_id, item_id ORDER BY ctx_date), DAY) AS days_since_last_sale,
+    *
+  FROM remove_zero_sales_days
+)
+SELECT 
+item_id AS ctx_item_id,
+count(*) AS count_days_with_sales,
+MIN(ctx_date) AS min_day_with_sales,
+MAX(ctx_date) AS max_day_with_sales,
+DATE_DIFF(MAX(ctx_date),MIN(ctx_date), MONTH) AS item_life_months,
+count(*)/(DATE_DIFF(MAX(ctx_date),MIN(ctx_date), MONTH)) AS ratio_sales_during_life,
+APPROX_QUANTILES(days_since_last_sale, 100)[OFFSET(97)] AS ctx_item_stockout_threshold,
+FROM zero_sales_days_diff
+GROUP BY item_id
+)

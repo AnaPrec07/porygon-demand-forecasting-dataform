@@ -1,0 +1,31 @@
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  description: "Rolling sales features per multiple hierarchy levels.",
+  tags: ["intermediate", "walmart", "features"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+  }
+}
+
+
+SELECT 
+    DISTINCT
+    ctx_date_month,
+    ctx_store_id,
+    ctx_item_id,
+    DENSE_RANK() OVER (ORDER BY ctx_state_id) AS fea_state_id_encoded,
+    DENSE_RANK() OVER (ORDER BY ctx_cat_id) AS fea_cat_id_encoded,
+    DENSE_RANK() OVER (ORDER BY ctx_dept_id) AS fea_dept_id_encoded,
+    DENSE_RANK() OVER (ORDER BY ctx_store_id) AS fea_store_id_encoded,
+    DENSE_RANK() OVER (ORDER BY ctx_item_id) AS fea_item_id_encoded,
+FROM ${ref("target_store_item_monthly")}

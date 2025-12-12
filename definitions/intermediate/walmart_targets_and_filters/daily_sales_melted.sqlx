@@ -1,0 +1,39 @@
+config {
+  type: "table",
+  schema: "walmart_targets_and_filters",
+  description: "Daily sales melted table.",
+  tags: ["intermediate", "filter"]
+}
+
+
+WITH raw_sales AS (
+  SELECT
+    day,
+    SUM(sales) AS daily_sales,
+    state_id,
+    store_id,
+    cat_id,
+    dept_id,
+    item_id
+  FROM (
+    SELECT *
+    FROM ${ref("sales_train_validation")} 
+    UNPIVOT (
+      sales FOR day IN (
+         ${schema_helpers.selectDayColumns(1, 1913, 'd_')})
+    )
+  )
+  GROUP BY 
+    day,
+    state_id,
+    store_id,
+    cat_id,
+    dept_id,
+    item_id
+)
+SELECT 
+cal.date AS ctx_date,
+raw.* 
+FROM raw_sales raw
+JOIN ${ref("calendar")} cal
+ON cal.d = raw.day

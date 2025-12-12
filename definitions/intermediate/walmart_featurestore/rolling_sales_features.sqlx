@@ -1,0 +1,166 @@
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  description: "Rolling sales features per multiple hierarchy levels.",
+  tags: ["intermediate", "walmart", "features"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+  }
+}
+
+
+WITH cleanned_targets AS (
+  SELECT 
+    tgt.ctx_date_month,
+    tgt.ctx_store_id,
+    tgt.ctx_item_id,
+    tgt.ctx_state_id,
+    tgt.tgt_monthly_sales,
+    tgt.tgt_days_is_zero_sales
+    FROM ${ref("target_store_item_monthly")} tgt 
+    LEFT JOIN ${ref("item_longevity_features")} long
+    ON long.ctx_item_id = tgt.ctx_item_id
+    AND long.ctx_date_month = tgt.ctx_date_month
+    WHERE tgt.ctx_date_month >= long.ctx_first_date
+    AND tgt.ctx_store_id = "CA_1"
+), item_sales AS (
+  SELECT
+  ctx_item_id,
+  ctx_store_id,
+  ctx_state_id,
+  src.ctx_date_month,
+  CASE WHEN tgt_monthly_sales = 0 THEN NULL ELSE tgt_monthly_sales END AS fea_item_monthly_sales,
+  tgt_days_is_zero_sales AS fea_num_days_item_is_zero_sales,
+  FROM cleanned_targets src
+
+),
+item_sales_ts AS (
+  SELECT
+  ctx_item_id,
+  ctx_store_id,
+  ctx_state_id,
+  ctx_date_month,
+  fea_item_monthly_sales,
+  fea_num_days_item_is_zero_sales,
+  
+  -- Window functions for item store level
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_monthly_sales")},
+  ${window_functions.generateLagColumns("fea_item_monthly_sales", 4)},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_num_days_item_is_zero_sales")},
+  ${window_functions.generateLagColumns("fea_num_days_item_is_zero_sales", 4)},
+  FROM item_sales
+),
+item_across_state AS (
+  SELECT 
+    it.ctx_date_month,
+    it.ctx_item_id,
+    it.ctx_state_id,
+    SUM(it.fea_item_monthly_sales) AS fea_state_item_monthly_sales,
+    SUM(it.fea_num_days_item_is_zero_sales) AS fea_state_item_num_days_is_zero_sales,
+  FROM item_sales it
+  GROUP BY 
+    it.ctx_date_month,
+    it.ctx_item_id,
+    it.ctx_state_id
+),
+item_across_state_ts AS (
+  SELECT 
+    it.ctx_date_month,
+    it.ctx_item_id,
+    it.ctx_state_id,
+    fea_state_item_monthly_sales,
+    fea_state_item_num_days_is_zero_sales,
+    -- Window functions for item state level
+    ${window_functions.generateRollAvgSTDEVPartition("fea_state_item_monthly_sales", partitionBy="ctx_item_id, ctx_state_id")},
+    ${window_functions.generateRollAvgSTDEVPartition("fea_state_item_num_days_is_zero_sales", partitionBy="ctx_item_id, ctx_state_id")},
+  FROM item_across_state it
+),
+item_total AS (
+  SELECT 
+    it.ctx_date_month,
+    it.ctx_item_id,
+    SUM(it.fea_item_monthly_sales) AS fea_all_item_monthly_sales,
+    SUM(it.fea_num_days_item_is_zero_sales) AS fea_all_item_num_days_is_zero_sales,
+  FROM item_sales it
+  GROUP BY 
+    it.ctx_date_month,
+    it.ctx_item_id
+),
+item_total_ts AS (
+  SELECT 
+    it.ctx_date_month,
+    it.ctx_item_id,
+    fea_all_item_monthly_sales,
+    fea_all_item_num_days_is_zero_sales,
+    -- Window functions for item level
+    ${window_functions.generateRollAvgSTDEVPartition("fea_all_item_monthly_sales", partitionBy="ctx_item_id")},
+    ${window_functions.generateRollAvgSTDEVPartition("fea_all_item_num_days_is_zero_sales", partitionBy="ctx_item_id")},
+  FROM item_total it
+)
+SELECT 
+  it.ctx_date_month,
+  it.ctx_item_id,
+  it.ctx_store_id,
+  it.fea_item_monthly_sales,
+  it.fea_num_days_item_is_zero_sales,
+  it.fea_item_monthly_sales_roll_avg_3_months,
+  it.fea_item_monthly_sales_roll_avg_6_months,
+  it.fea_item_monthly_sales_roll_avg_12_months,
+  it.fea_item_monthly_sales_roll_std_3_months,
+  it.fea_item_monthly_sales_roll_std_6_months,
+  it.fea_item_monthly_sales_roll_std_12_months,
+  it.fea_item_monthly_sales_lag_1_months,
+  it.fea_item_monthly_sales_lag_2_months,
+  it.fea_item_monthly_sales_lag_3_months,
+  it.fea_item_monthly_sales_lag_4_months,
+  SAFE_DIVIDE(it.fea_item_monthly_sales - it.fea_item_monthly_sales_lag_1_months, it.fea_item_monthly_sales_lag_1_months) AS fea_item_monthly_sales_percent_change,
+  it.fea_num_days_item_is_zero_sales_roll_avg_3_months,
+  it.fea_num_days_item_is_zero_sales_roll_avg_6_months,
+  it.fea_num_days_item_is_zero_sales_roll_avg_12_months,
+  it.fea_num_days_item_is_zero_sales_roll_std_3_months,
+  it.fea_num_days_item_is_zero_sales_roll_std_6_months,
+  it.fea_num_days_item_is_zero_sales_roll_std_12_months,
+  it.fea_num_days_item_is_zero_sales_lag_1_months,
+  SAFE_DIVIDE(it.fea_num_days_item_is_zero_sales - it.fea_num_days_item_is_zero_sales_lag_1_months, it.fea_num_days_item_is_zero_sales_lag_1_months) AS fea_num_days_item_is_zero_percent_change,
+  it.fea_num_days_item_is_zero_sales_lag_2_months,
+  it.fea_num_days_item_is_zero_sales_lag_3_months,
+  it.fea_num_days_item_is_zero_sales_lag_4_months,
+  it_state_ts.fea_state_item_monthly_sales,
+  fea_state_item_num_days_is_zero_sales,
+  fea_state_item_monthly_sales_roll_avg_3_months,
+  fea_state_item_monthly_sales_roll_avg_6_months,
+  fea_state_item_monthly_sales_roll_avg_12_months,
+  fea_state_item_monthly_sales_roll_std_3_months,
+  fea_state_item_monthly_sales_roll_std_6_months,
+  fea_state_item_monthly_sales_roll_std_12_months,
+  fea_state_item_num_days_is_zero_sales_roll_avg_3_months,
+  fea_state_item_num_days_is_zero_sales_roll_avg_6_months,
+  fea_state_item_num_days_is_zero_sales_roll_avg_12_months,
+  fea_state_item_num_days_is_zero_sales_roll_std_3_months,
+  fea_state_item_num_days_is_zero_sales_roll_std_6_months,
+  fea_state_item_num_days_is_zero_sales_roll_std_12_months,
+  it_all.fea_all_item_monthly_sales,
+  it_all.fea_all_item_num_days_is_zero_sales,
+  fea_all_item_monthly_sales_roll_avg_3_months,
+  fea_all_item_monthly_sales_roll_avg_6_months,
+  fea_all_item_monthly_sales_roll_avg_12_months,
+  fea_all_item_monthly_sales_roll_std_3_months,
+  fea_all_item_monthly_sales_roll_std_6_months,
+  fea_all_item_monthly_sales_roll_std_12_months,
+FROM item_sales_ts it 
+LEFT JOIN item_across_state_ts it_state_ts
+ON it.ctx_date_month = it_state_ts.ctx_date_month
+AND it.ctx_item_id = it_state_ts.ctx_item_id
+AND it.ctx_state_id = it_state_ts.ctx_state_id
+LEFT JOIN item_total_ts it_all
+ON it.ctx_date_month = it_all.ctx_date_month
+AND it.ctx_item_id = it_all.ctx_item_id
