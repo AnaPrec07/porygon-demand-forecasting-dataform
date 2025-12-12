@@ -1,0 +1,23 @@
+config {
+  type: "operations",
+  tags: ["setup"],
+  hasOutput: true,
+  schema: "walmart_raw",
+  name: "sales_train_validation"
+}
+
+CREATE OR REPLACE EXTERNAL TABLE ${self()}
+(
+  id STRING,
+  item_id STRING,
+  dept_id STRING,
+  cat_id STRING,
+  store_id STRING,
+  state_id STRING,
+  ${schema_helpers.selectDayColumns(1, 1913, 'd_', ' INTEGER')}
+)
+OPTIONS (
+  format = 'CSV',
+  uris = ['https://storage.googleapis.com/m5_raw/sales_train_validation.csv'],
+  skip_leading_rows = 1
+);

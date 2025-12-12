@@ -1,0 +1,20 @@
+config {
+  type: "operations",
+  tags: ["setup"],
+  hasOutput: true,
+  schema: "walmart_raw",
+  name: "sell_price"
+}
+
+CREATE OR REPLACE EXTERNAL TABLE ${self()}
+(
+  store_id STRING,
+  item_id STRING,
+  wm_yr_wk INTEGER,
+  sell_price FLOAT64,
+)
+OPTIONS (
+  format = 'CSV',
+  uris = ['https://storage.googleapis.com/m5_raw/sell_prices.csv'],
+  skip_leading_rows = 1
+);

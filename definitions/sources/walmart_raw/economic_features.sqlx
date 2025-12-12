@@ -1,0 +1,21 @@
+config {
+  type: "operations",
+  tags: ["setup"],
+  hasOutput: true,
+  schema: "walmart_raw",
+  name: "economic_features"
+}
+
+CREATE OR REPLACE EXTERNAL TABLE ${self()}
+(
+  observation_date STRING,
+  fea_wi_unemployment_rate FLOAT64,
+  fea_tx_unemployment_rate FLOAT64,
+  fea_ca_unemployment_rate FLOAT64,
+  fea_gas_price_per_gallon FLOAT64,
+)
+OPTIONS (
+  format = 'CSV',
+  uris = ['https://storage.googleapis.com/m5_raw/economic_features.csv'],
+  skip_leading_rows = 1
+);
