@@ -1,0 +1,98 @@
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  description: "Price features with time series rolling averages at multiple hierarchy levels.",
+  tags: ["intermediate", "walmart", "features"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+  }
+}
+
+WITH ts AS (
+  SELECT
+    ctx_item_id,
+    ctx_store_id,
+    ctx_date_month,
+    fea_item_monthly_sales AS x,
+    fea_price_pct_change_3m AS pc3m,
+    fea_item_price_avg AS pav,
+    fea_item_vs_dept_price_ratio AS pvsdept
+  FROM ${ref("price_features_ts")} price
+  LEFT JOIN ${ref("rolling_sales_features")} sales
+  ON price.ctx_date_month = sales.ctx_date_month
+  AND price.ctx_item_id = sales.ctx_item_id
+  AND price.ctx_store_id = sales.ctx_store_id
+),
+rolling AS (
+  SELECT
+    ctx_item_id,
+    ctx_store_id,
+    ctx_date_month,
+
+    -- n = number of valid rows in the window
+    COUNT(pc3m) OVER w AS n_pc3m,
+    COUNT(pav) OVER w AS n_pav,
+    COUNT(pvsdept) OVER w AS n_pvsdept,
+
+    -- sums x
+    SUM(x) OVER w AS sum_x,
+    SUM(x * x) OVER w AS sum_x2,
+
+    -- sums pc3m
+    SUM(pc3m) OVER w AS sum_pc3m,
+    SUM(x * pc3m) OVER w AS sum_xpc3m,
+    SUM(pc3m * pc3m) OVER w AS sum_pc3m_2,
+
+    -- sums pav
+    SUM(pav) OVER w AS sum_pav,
+    SUM(x * pav) OVER w AS sum_xpav,
+    SUM(pav * pav) OVER w AS sum_pav_2,
+
+    -- sums pvsdept
+    SUM(pvsdept) OVER w AS sum_pvsdept,
+    SUM(x * pvsdept) OVER w AS sum_xpvsdept,
+    SUM(pvsdept * pvsdept) OVER w AS sum_pvsdept_2,
+  
+  FROM ts
+  WINDOW w AS (
+    PARTITION BY ctx_item_id, ctx_store_id
+    ORDER BY ctx_date_month
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  )
+)
+SELECT
+  ctx_item_id,
+  ctx_store_id,
+  ctx_date_month,
+  SAFE_DIVIDE(
+    (sum_xpc3m* n_pc3m - (sum_x * sum_pc3m)),
+    SQRT(
+      ABS(((n_pc3m*sum_x2)-POWER(sum_x,2)) *
+      ((n_pc3m*sum_pc3m_2)-POWER(sum_pc3m,2)))
+    )
+  ) AS fea_correlation_pc3m,
+  SAFE_DIVIDE(
+    (sum_xpav* n_pav - (sum_x * sum_pav)),
+    SQRT(
+      ABS(((n_pav*sum_x2)-POWER(sum_x,2)) *
+      ((n_pav*sum_pav_2)-POWER(sum_pav,2)))
+    )
+  ) AS fea_correlation_pav,
+  SAFE_DIVIDE(
+    (sum_xpvsdept* n_pvsdept - (sum_x * sum_pvsdept)),
+    SQRT(
+      ABS(((n_pvsdept*sum_x2)-POWER(sum_x,2)) *
+      ((n_pvsdept*sum_pvsdept_2)-POWER(sum_pvsdept,2)))
+    )
+  ) AS fea_correlation_pvsdept,
+FROM rolling
+ORDER BY ctx_item_id, ctx_store_id, ctx_date_month
