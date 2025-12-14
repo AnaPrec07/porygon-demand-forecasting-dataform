@@ -1,0 +1,121 @@
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  description: "Calendar features.",
+  tags: ["intermediate", "walmart", "features"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+    ],
+  }
+}
+
+WITH ts AS (
+  SELECT
+    ctx_item_id,
+    ctx_store_id,
+    sales.ctx_date_month,
+    fea_item_monthly_sales AS x,
+    fea_is_event_1 AS event1,
+    fea_is_sporting_event AS sport,
+    fea_is_national_event AS nat,
+    fea_is_cultural_event AS cult,
+    fea_is_religious_event AS rel,
+  FROM ${ref("calendar_features")} cal
+  LEFT JOIN ${ref("rolling_sales_features")} sales
+  ON cal.ctx_date_month = sales.ctx_date_month
+  WHERE ctx_item_id IS NOT NULL
+),
+rolling AS (
+  SELECT
+    ctx_item_id,
+    ctx_store_id,
+    ctx_date_month,
+
+    -- n = number of valid rows in the window
+    COUNT(event1) OVER w AS n_event1,
+    COUNT(sport) OVER w AS n_sport,
+    COUNT(nat) OVER w AS n_nat,
+    COUNT(rel) OVER w AS n_cult,
+    COUNT(rel) OVER w AS n_rel,
+
+    -- sums x
+    SUM(x) OVER w AS sum_x,
+    SUM(x * x) OVER w AS sum_x2,
+
+    -- sums event1
+    SUM(event1) OVER w AS sum_event1,
+    SUM(x * event1) OVER w AS sum_xevent1,
+    SUM(event1 * event1) OVER w AS sum_event1_2,
+
+    -- sums sport
+    SUM(sport) OVER w AS sum_sport,
+    SUM(x * sport) OVER w AS sum_xsport,
+    SUM(sport * sport) OVER w AS sum_sport_2,
+
+    -- sums nat
+    SUM(nat) OVER w AS sum_nat,
+    SUM(x * nat) OVER w AS sum_xnat,
+    SUM(nat * nat) OVER w AS sum_nat_2,
+  
+    -- sums cult 
+    SUM(cult) OVER w AS sum_cult,
+    SUM(x * cult) OVER w AS sum_xcult,
+    SUM(cult * cult) OVER w AS sum_cult_2,
+
+    -- sums rel 
+    SUM(rel) OVER w AS sum_rel,
+    SUM(x * rel) OVER w AS sum_xrel,
+    SUM(rel * rel) OVER w AS sum_rel_2,
+
+  FROM ts
+  WINDOW w AS (
+    PARTITION BY ctx_item_id, ctx_store_id
+    ORDER BY ctx_date_month
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  )
+)
+SELECT
+  ctx_item_id,
+  ctx_store_id,
+  ctx_date_month,
+  SAFE_DIVIDE(
+    (sum_xevent1* n_event1 - (sum_x * sum_event1)),
+    SQRT(
+      ABS(((n_event1*sum_x2)-POWER(sum_x,2)) *
+      ((n_event1*sum_event1_2)-POWER(sum_event1,2)))
+    )
+  ) AS fea_correlation_event1,
+  SAFE_DIVIDE(
+    (sum_xsport* n_sport - (sum_x * sum_sport)),
+    SQRT(
+      ABS(((n_sport*sum_x2)-POWER(sum_x,2)) *
+      ((n_sport*sum_sport_2)-POWER(sum_sport,2)))
+    )
+  ) AS fea_correlation_sport,
+  SAFE_DIVIDE(
+    (sum_xnat* n_nat - (sum_x * sum_nat)),
+    SQRT(
+      ABS(((n_nat*sum_x2)-POWER(sum_x,2)) *
+      ((n_nat*sum_nat_2)-POWER(sum_nat,2)))
+    )
+  ) AS fea_correlation_nat,
+  SAFE_DIVIDE(
+    (sum_xcult* n_cult - (sum_x * sum_cult)),
+    SQRT(
+      ABS(((n_cult*sum_x2)-POWER(sum_x,2)) *
+      ((n_cult*sum_cult_2)-POWER(sum_cult,2)))
+    )
+  ) AS fea_correlation_cult,
+  SAFE_DIVIDE(
+    (sum_xrel* n_rel - (sum_x * sum_rel)),
+    SQRT(
+      ABS(((n_rel*sum_x2)-POWER(sum_x,2)) *
+      ((n_rel*sum_rel_2)-POWER(sum_rel,2)))
+    )
+  ) AS fea_correlation_rel
+FROM rolling
+ORDER BY ctx_item_id, ctx_store_id, ctx_date_month
