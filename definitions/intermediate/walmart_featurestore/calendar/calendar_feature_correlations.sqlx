@@ -24,6 +24,7 @@ WITH ts AS (
     fea_is_national_event AS nat,
     fea_is_cultural_event AS cult,
     fea_is_religious_event AS rel,
+    fea_month_sin AS seas
   FROM ${ref("calendar_features")} cal
   LEFT JOIN ${ref("rolling_sales_features")} sales
   ON cal.ctx_date_month = sales.ctx_date_month
@@ -41,6 +42,7 @@ rolling AS (
     COUNT(nat) OVER w AS n_nat,
     COUNT(rel) OVER w AS n_cult,
     COUNT(rel) OVER w AS n_rel,
+    COUNT(seas) OVER w AS n_seas,
 
     -- sums x
     SUM(x) OVER w AS sum_x,
@@ -70,6 +72,11 @@ rolling AS (
     SUM(rel) OVER w AS sum_rel,
     SUM(x * rel) OVER w AS sum_xrel,
     SUM(rel * rel) OVER w AS sum_rel_2,
+
+    -- sums seas 
+    SUM(seas) OVER w AS sum_seas,
+    SUM(x * seas) OVER w AS sum_xseas,
+    SUM(seas * seas) OVER w AS sum_seas_2,
 
   FROM ts
   WINDOW w AS (
@@ -116,6 +123,13 @@ SELECT
       ABS(((n_rel*sum_x2)-POWER(sum_x,2)) *
       ((n_rel*sum_rel_2)-POWER(sum_rel,2)))
     )
-  ) AS fea_correlation_rel
+  ) AS fea_correlation_rel,
+  SAFE_DIVIDE(
+    (sum_xseas* n_eas - (sum_x * sum_seas)),
+    SQRT(
+      ABS(((n_seas*sum_x2)-POWER(sum_x,2)) *
+      ((n_seas*sum_seas_2)-POWER(sum_seas,2)))
+    )
+  ) AS fea_correlation_seasonality
 FROM rolling
 ORDER BY ctx_item_id, ctx_store_id, ctx_date_month
