@@ -1,0 +1,116 @@
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  name: "trend_correlation_features",
+  description: "Trend correlation features for item/store/month.",
+  tags: ["intermediate", "walmart", "features"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+  }
+}
+
+WITH ts AS (
+  SELECT
+    sales.ctx_item_id,
+    sales.ctx_store_id,
+    sales.ctx_date_month,
+    fea_item_monthly_sales AS x,
+    CAST(fea_detrender AS INTEGER) AS msev,
+    FROM ${ref("calendar_features")} cal
+    LEFT JOIN ${ref("rolling_sales_features")} sales
+    ON cal.ctx_date_month = sales.ctx_date_month
+    WHERE ctx_item_id IS NOT NULL
+),
+rolling_3 AS (
+  SELECT
+    ctx_item_id,
+    ctx_store_id,
+    ctx_date_month,
+    -- features
+    x,
+    SUM(x) OVER w AS sum_x,
+    SUM(x * x) OVER w AS sum_x2,
+    -- msev features
+    msev,
+    COUNT(msev) OVER w AS n_msev,
+    SUM(msev) OVER w AS sum_msev,
+    SUM(x * msev) OVER w AS sum_xmsev,
+    SUM(msev * msev) OVER w AS sum_msev_2,
+  FROM ts
+  WINDOW w AS (
+    PARTITION BY ctx_item_id, ctx_store_id
+    ORDER BY ctx_date_month
+    ROWS BETWEEN 3 PRECEDING AND CURRENT ROW
+  )
+),
+rolling_6 AS (
+  SELECT
+    ctx_item_id,
+    ctx_store_id,
+    ctx_date_month,
+    -- features
+    x,
+    SUM(x) OVER w AS sum_x,
+    SUM(x * x) OVER w AS sum_x2,
+    -- msev features
+    msev,
+    COUNT(msev) OVER w AS n_msev,
+    SUM(msev) OVER w AS sum_msev,
+    SUM(x * msev) OVER w AS sum_xmsev,
+    SUM(msev * msev) OVER w AS sum_msev_2,
+  FROM ts
+  WINDOW w AS (
+    PARTITION BY ctx_item_id, ctx_store_id
+    ORDER BY ctx_date_month
+    ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+  )
+),
+correlations_calculations_3 AS (
+SELECT
+  ctx_item_id,
+  ctx_store_id,
+  ctx_date_month,
+  SAFE_DIVIDE(
+    (sum_xmsev* n_msev - (sum_x * sum_msev)),
+    SQRT(
+      ((n_msev*sum_x2)-POWER(sum_x,2)) *
+      ((n_msev*sum_msev_2)-POWER(sum_msev,2))
+    )
+  ) AS fea_3m_trend_correlation,
+FROM rolling_3
+),
+correlations_calculations_6 AS (
+SELECT
+  ctx_item_id,
+  ctx_store_id,
+  ctx_date_month,
+  SAFE_DIVIDE(
+    (sum_xmsev* n_msev - (sum_x * sum_msev)),
+    SQRT(
+      ((n_msev*sum_x2)-POWER(sum_x,2)) *
+      ((n_msev*sum_msev_2)-POWER(sum_msev,2))
+    )
+  ) AS fea_6m_trend_correlation,
+  x
+FROM rolling_6
+)
+SELECT 
+  cor3.ctx_item_id,
+  cor3.ctx_store_id,
+  cor3.ctx_date_month,
+  fea_3m_trend_correlation,
+  fea_6m_trend_correlation,
+FROM correlations_calculations_3 cor3
+LEFT JOIN correlations_calculations_6 cor6
+ON cor3.ctx_item_id = cor6.ctx_item_id
+AND cor3.ctx_date_month = cor6.ctx_date_month
+AND cor3.ctx_store_id = cor6.ctx_store_id
