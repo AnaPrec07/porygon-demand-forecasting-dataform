@@ -13,6 +13,7 @@ CREATE OR REPLACE EXTERNAL TABLE ${self()}
   fea_tx_unemployment_rate FLOAT64,
   fea_ca_unemployment_rate FLOAT64,
   fea_gas_price_per_gallon FLOAT64,
+  fea_cpi_food_inverted FLOAT64
 )
 OPTIONS (
   format = 'CSV',
