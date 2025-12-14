@@ -1,0 +1,199 @@
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  name: "dept_sales_correlations",
+  description: "Correlations of department sales with other departments by store and month.",
+  tags: ["intermediate", "walmart", "features"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+  }
+}
+
+WITH department_sales AS (
+  SELECT 
+    ctx_date_month,
+    ctx_dept_id,
+    AVG(tgt_monthly_sales) AS average_tgt,
+  FROM `porygon-pipelines.walmart_targets_and_filters.target_store_item_monthly`
+  WHERE ctx_store_id = "CA_1"
+    AND tgt_monthly_sales > 0
+  GROUP BY ctx_date_month, ctx_dept_id
+),
+pivot_avg AS (
+  SELECT
+  *
+  FROM department_sales
+  PIVOT (
+    ANY_VALUE(average_tgt) FOR ctx_dept_id IN (
+      "HOBBIES_1", "HOBBIES_2",
+      "HOUSEHOLD_1", "HOUSEHOLD_2",
+      "FOODS_1", "FOODS_2", "FOODS_3"
+    )
+  )
+),
+average_per_dept AS (
+  SELECT 
+    ctx_date_month,
+    HOBBIES_1 AS fea_ca1_hobbies_1_avg,
+    HOBBIES_2 AS fea_ca1_hobbies_2_avg,
+    HOUSEHOLD_1 AS fea_ca1_household_1_avg,
+    HOUSEHOLD_2 AS fea_ca1_household_2_avg,
+    FOODS_1 AS fea_ca1_foods_1_avg,
+    FOODS_2 AS fea_ca1_foods_2_avg,
+    FOODS_3 AS fea_ca1_foods_3_avg
+  FROM pivot_avg
+),
+ts AS (
+  SELECT
+    rf.ctx_item_id,
+    rf.ctx_store_id,
+    rf.ctx_date_month,
+    fea_item_monthly_sales AS x,
+    fea_ca1_hobbies_1_avg AS hb1,
+    fea_ca1_hobbies_2_avg AS hb2,
+    fea_ca1_household_1_avg AS hh1,
+    fea_ca1_household_2_avg AS hh2,
+    fea_ca1_foods_1_avg AS fd1,
+    fea_ca1_foods_2_avg AS fd2,
+    fea_ca1_foods_3_avg AS fd3,
+  FROM `porygon-pipelines.walmart_featurestore.rolling_sales_features` rf
+  LEFT JOIN average_per_dept dpt
+  ON rf.ctx_date_month = dpt.ctx_date_month
+),
+rolling AS (
+  SELECT
+    ctx_item_id,
+    ctx_store_id,
+    ctx_date_month,
+
+    -- n = number of valid rows in the window
+    COUNT(hb1) OVER w AS n_hb1,
+    COUNT(hb2) OVER w AS n_hb2,
+    COUNT(hh1) OVER w AS n_hh1,
+    COUNT(hh2) OVER w AS n_hh2,
+    COUNT(fd1) OVER w AS n_fd1,
+    COUNT(fd2) OVER w AS n_fd2,
+    COUNT(fd3) OVER w AS n_fd3,
+
+    -- sums hb1
+    SUM(x) OVER w AS sum_x,
+    SUM(hb1) OVER w AS sum_hb1,
+    SUM(x * hb1) OVER w AS sum_xhb1,
+    SUM(x * x) OVER w AS sum_x2,
+    SUM(hb1 * hb1) OVER w AS sum_hb1_2,
+
+    -- sums hb2
+    SUM(hb2) OVER w AS sum_hb2,
+    SUM(x * hb2) OVER w AS sum_xhb2,
+    SUM(hb2 * hb2) OVER w AS sum_hb2_2,
+
+    -- sums hh1
+    SUM(hh1) OVER w AS sum_hh1,
+    SUM(x * hh1) OVER w AS sum_xhh1,
+    SUM(hh1 * hh1) OVER w AS sum_hh1_2,
+  
+    -- sums hh2
+    SUM(hh2) OVER w AS sum_hh2,
+    SUM(x * hh2) OVER w AS sum_xhh2,
+    SUM(hh2 * hh2) OVER w AS sum_hh2_2,
+
+    -- sums fd1
+    SUM(fd1) OVER w AS sum_fd1,
+    SUM(x * fd1) OVER w AS sum_xfd1,
+    SUM(fd1 * fd1) OVER w AS sum_fd1_2,
+
+    -- sums fd2
+    SUM(fd2) OVER w AS sum_fd2,
+    SUM(x * fd2) OVER w AS sum_xfd2,
+    SUM(fd2 * fd2) OVER w AS sum_fd2_2,
+
+    -- sums fd3
+    SUM(fd3) OVER w AS sum_fd3,
+    SUM(x * fd3) OVER w AS sum_xfd3,
+    SUM(fd3 * fd3) OVER w AS sum_fd3_2,
+
+  FROM ts
+  WINDOW w AS (
+    PARTITION BY ctx_item_id, ctx_store_id
+    ORDER BY ctx_date_month
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  )
+),
+correlations AS (
+SELECT
+  ctx_item_id,
+  ctx_store_id,
+  ctx_date_month,
+  SAFE_DIVIDE(
+    (sum_xhb1* n_hb1 - (sum_x * sum_hb1)),
+    SQRT(
+      ((n_hb1*sum_x2)-POWER(sum_x,2)) *
+      ((n_hb1*sum_hb1_2)-POWER(sum_hb1,2))
+    )
+  ) AS fea_ca1_hobbies1_correlation,
+  SAFE_DIVIDE(
+    (sum_xhb2* n_hb2 - (sum_x * sum_hb2)),
+    SQRT(
+      ((n_hb2*sum_x2)-POWER(sum_x,2)) *
+      ((n_hb2*sum_hb2_2)-POWER(sum_hb2,2))
+    )
+  ) AS fea_ca1_hobbies2_correlation,
+  SAFE_DIVIDE(
+    (sum_xhh1* n_hh1 - (sum_x * sum_hh1)),
+    SQRT(
+      ((n_hh1*sum_x2)-POWER(sum_x,2)) *
+      ((n_hh1*sum_hh1_2)-POWER(sum_hh1,2))
+    )
+  ) AS fea_ca1_household1_correlation,
+  SAFE_DIVIDE(
+    (sum_xhh2* n_hh2 - (sum_x * sum_hh2)),
+    SQRT(
+      ((n_hh2*sum_x2)-POWER(sum_x,2)) *
+      ((n_hh2*sum_hh2_2)-POWER(sum_hh2,2))
+    )
+  ) AS fea_ca1_household2_correlation,
+  SAFE_DIVIDE(
+    (sum_xfd1* n_fd1 - (sum_x * sum_fd1)),
+    SQRT(
+      ((n_fd1*sum_x2)-POWER(sum_x,2)) *
+      ((n_fd1*sum_fd1_2)-POWER(sum_fd1,2))
+    )
+  ) AS fea_ca1_foods1_correlation,
+  SAFE_DIVIDE(
+    (sum_xfd2* n_fd2 - (sum_x * sum_fd2)),
+    SQRT(
+      ((n_fd2*sum_x2)-POWER(sum_x,2)) *
+      ((n_fd2*sum_fd2_2)-POWER(sum_fd2,2))
+    )
+  ) AS fea_ca1_foods2_correlation,
+  SAFE_DIVIDE(
+    (sum_xfd3* n_fd3 - (sum_x * sum_fd3)),
+    SQRT(
+      ((n_fd3*sum_x2)-POWER(sum_x,2)) *
+      ((n_fd3*sum_fd3_2)-POWER(sum_fd3,2))
+    )
+  ) AS fea_ca1_foods3_correlation,
+FROM rolling
+ORDER BY ctx_item_id, ctx_store_id, ctx_date_month
+)
+SELECT 
+corl.*,
+av.fea_ca1_hobbies_1_avg,
+av.fea_ca1_hobbies_2_avg,
+av.fea_ca1_household_1_avg,
+av.fea_ca1_household_2_avg,
+av.fea_ca1_foods_1_avg,
+av.fea_ca1_foods_2_avg,
+av.fea_ca1_foods_3_avg
+FROM correlations corl
+LEFT JOIN average_per_dept av
+ON av.ctx_date_month = corl.ctx_date_month
