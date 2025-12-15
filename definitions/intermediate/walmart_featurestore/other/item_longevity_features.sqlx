@@ -3,7 +3,7 @@ config {
     schema: "walmart_featurestore",
     name: "item_longevity_features",
     description: "Item longevity features for CA_1 store.",
-    tags: ["intermediate", "walmart", "features"],
+    tags: ["intermediate", "walmart", "features", "other_features"],
     assertions: {
         nonNull: [
         "ctx_date_month",
