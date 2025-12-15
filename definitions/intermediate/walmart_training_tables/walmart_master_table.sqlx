@@ -403,57 +403,6 @@ config {
     fea_gas_price_per_gallon_roll_avg_12_months,
     fea_gas_price_per_gallon_roll_std_12_months,
 
-    -- monthly sales delta features
-    fea_ca_monthly_sales_delta,
-    fea_tx_monthly_sales_delta,
-    fea_wi_monthly_sales_delta,
-    fea_hobbies_monthly_sales_delta,
-    fea_household_monthly_sales_delta,
-    fea_foods_monthly_sales_delta,
-    fea_hobbies_1_monthly_sales_delta,
-    fea_hobbies_2_monthly_sales_delta,
-    fea_household_1_monthly_sales_delta,
-    fea_household_2_monthly_sales_delta,
-    fea_foods_1_monthly_sales_delta,
-    fea_foods_2_monthly_sales_delta,
-    fea_foods_3_monthly_sales_delta,
-    fea_ca_1_monthly_sales_delta,
-    fea_ca_2_monthly_sales_delta,
-    fea_ca_3_monthly_sales_delta,
-    fea_ca_4_monthly_sales_delta,
-    fea_tx_1_monthly_sales_delta,
-    fea_tx_2_monthly_sales_delta,
-    fea_tx_3_monthly_sales_delta,
-    fea_wi_1_monthly_sales_delta,
-    fea_wi_2_monthly_sales_delta,
-    fea_wi_3_monthly_sales_delta,
-    fea_ca_monthly_sales_delta_roll_avg_3_months,
-    fea_ca_monthly_sales_delta_roll_std_3_months,
-    fea_ca_monthly_sales_delta_roll_avg_6_months,
-    fea_ca_monthly_sales_delta_roll_std_6_months,
-    fea_ca_monthly_sales_delta_roll_avg_12_months,
-    fea_ca_monthly_sales_delta_roll_std_12_months,
-    fea_tx_monthly_sales_delta_roll_avg_3_months,
-    fea_tx_monthly_sales_delta_roll_std_3_months,
-    fea_tx_monthly_sales_delta_roll_avg_6_months,
-    fea_tx_monthly_sales_delta_roll_std_6_months,
-    fea_tx_monthly_sales_delta_roll_avg_12_months,
-    fea_tx_monthly_sales_delta_roll_std_12_months,
-    fea_wi_monthly_sales_delta_roll_avg_3_months,
-    fea_wi_monthly_sales_delta_roll_std_3_months,
-    fea_wi_monthly_sales_delta_roll_avg_6_months,
-    fea_wi_monthly_sales_delta_roll_std_6_months,
-    fea_wi_monthly_sales_delta_roll_avg_12_months,
-    fea_wi_monthly_sales_delta_roll_std_12_months,
-    fea_hobbies_monthly_sales_delta_roll_avg_3_months,
-    fea_hobbies_monthly_sales_delta_roll_std_3_months,
-    fea_hobbies_monthly_sales_delta_roll_avg_6_months,
-    fea_hobbies_monthly_sales_delta_roll_std_6_months,
-    fea_hobbies_monthly_sales_delta_roll_avg_12_months,
-    fea_hobbies_monthly_sales_delta_roll_std_12_months,
-    fea_household_monthly_sales_delta_roll_avg_3_months,
-    fea_household_monthly_sales_delta_roll_std_3_months,
-
     -- global monthly sales features
     fea_ca_monthly_sales_roll_avg_3_months,
     fea_ca_monthly_sales_roll_std_3_months,
@@ -832,8 +781,6 @@ LEFT JOIN ${ref("population_features")} pop_feas
     AND ctx_date_year = EXTRACT(YEAR FROM tgt.ctx_date_month)
 LEFT JOIN ${ref("economic_indicator_features")} econ_feas
     ON econ_feas.ctx_date_month = tgt.ctx_date_month
-LEFT JOIN ${ref("rolling_percent_sales")} percent_feas
-    ON percent_feas.ctx_date_month = tgt.ctx_date_month
 LEFT JOIN ${ref("rolling_sales_features")} roll_feas
     ON roll_feas.ctx_date_month = tgt.ctx_date_month
     AND roll_feas.ctx_item_id = tgt.ctx_item_id
