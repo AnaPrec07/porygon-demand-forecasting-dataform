@@ -1,4 +1,21 @@
-CREATE OR REPLACE TABLE `porygon-pipelines.walmart_featurestore.weather_correlations` AS 
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  description: "Rolling weather feature correlations per item-store.",
+  tags: ["intermediate", "walmart", "features"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_store_id",
+      "ctx_item_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_store_id",
+      "ctx_item_id",
+    ],
+  }
+}
 
 WITH ts AS (
   SELECT
