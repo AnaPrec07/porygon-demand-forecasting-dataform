@@ -20,6 +20,7 @@ WITH economic_indicators AS (
         fea_tx_unemployment_rate,
         fea_ca_unemployment_rate,
         fea_gas_price_per_gallon,
+        fea_cpi_food
     FROM ${ref("economic_features")}
 )
 SELECT 
