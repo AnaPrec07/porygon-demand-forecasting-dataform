@@ -125,7 +125,7 @@ SELECT
     )
   ) AS fea_correlation_rel,
   SAFE_DIVIDE(
-    (sum_xseas* n_eas - (sum_x * sum_seas)),
+    (sum_xseas* n_seas - (sum_x * sum_seas)),
     SQRT(
       ABS(((n_seas*sum_x2)-POWER(sum_x,2)) *
       ((n_seas*sum_seas_2)-POWER(sum_seas,2)))
