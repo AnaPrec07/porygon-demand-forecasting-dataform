@@ -39,23 +39,12 @@ config {
     tgt_days_is_zero_sales_lead_3_months,
     tgt_days_is_zero_sales_lead_4_months,
 
-    -- outlier filters
-    outlier_threshold_q97,
-    is_tgt_outlier,
-    is_outlier_3m_tgt,
-
     -- stockout filters
     is_stockout,
     is_stockout_lead_1,
     is_stockout_lead_2,
     is_stockout_lead_3,
     is_stockout_tgt,
-
-    -- item_longevity_filters
-    ctx_first_date,
-    is_one_year_old,
-    is_six_months_old,
-    is_three_months_old,
 
     -- calendar feature fields
     fea_is_weekend,
@@ -818,10 +807,6 @@ config {
     -- longevity features:
     fea_month_difference,
 
-    -- seasonality correlation features:
-    fea_seasonality_correlation_lag3,
-    fea_seasonality_if_correlated,
-
     -- trend correlation features:
     fea_3m_trend_correlation,
     fea_6m_trend_correlation,
@@ -870,10 +855,6 @@ LEFT JOIN ${ref("historical_stockout_features")} histckt_feas
 LEFT JOIN ${ref("item_longevity_features")} long_feas
     ON long_feas.ctx_date_month = tgt.ctx_date_month
     AND long_feas.ctx_item_id = tgt.ctx_item_id
-LEFT JOIN ${ref("seasonality_correlation")} sea_feas
-    ON sea_feas.ctx_date_month = tgt.ctx_date_month
-    AND sea_feas.ctx_item_id = tgt.ctx_item_id
-    AND sea_feas.ctx_store_id = tgt.ctx_store_id
 LEFT JOIN ${ref("trend_correlation_features")} trend_feas
     ON trend_feas.ctx_date_month = tgt.ctx_date_month
     AND trend_feas.ctx_item_id = tgt.ctx_item_id
@@ -884,9 +865,5 @@ LEFT JOIN ${ref("stockout_filter")} stk
     ON stk.ctx_date_month = tgt.ctx_date_month
     AND stk.ctx_item_id = tgt.ctx_item_id
     AND stk.ctx_store_id = tgt.ctx_store_id
-LEFT JOIN ${ref("target_outliers_filter")} tf
-    ON tf.ctx_date_month = tgt.ctx_date_month
-    AND tf.ctx_item_id = tgt.ctx_item_id
-    AND tf.ctx_store_id = tgt.ctx_store_id
 
 WHERE tgt.ctx_store_id = "CA_1"
