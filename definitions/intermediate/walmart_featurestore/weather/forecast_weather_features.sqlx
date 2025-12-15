@@ -1,4 +1,21 @@
-CREATE OR REPLACE TABLE `porygon-pipelines.walmart_featurestore.weather_forecast_features` AS
+
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  description: "Rolling weather forecast features per state.",
+  tags: ["intermediate", "walmart", "features"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_state_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_state_id",
+    ],
+  }
+}
+
 SELECT 
   ctx_date_month, 
   ctx_state_id,
@@ -45,7 +62,7 @@ SELECT
   MAX(max_snow_ice_pellets) OVER w AS feature_forecast_max_snow_ice_pellets_3m,
   MAX(max_rain_drizzle) OVER w AS feature_forecast_max_rain_drizzle_3m
 
-FROM `porygon-pipelines.walmart_featurestore.weather_features`
+FROM ${ref("weather_features")}
 
 WINDOW w AS (
   PARTITION BY ctx_state_id
