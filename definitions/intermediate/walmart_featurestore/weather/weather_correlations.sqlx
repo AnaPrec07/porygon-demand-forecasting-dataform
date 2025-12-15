@@ -1,0 +1,162 @@
+CREATE OR REPLACE TABLE `porygon-pipelines.walmart_featurestore.weather_correlations` AS 
+
+WITH ts AS (
+  SELECT
+    ctx_item_id,
+    ctx_store_id,
+    ctx_date_month,
+    fea_item_monthly_sales AS x,
+    mean_temperature AS tmp,
+    mean_visib AS visib,
+    mean_wdsp AS wdsp,
+    mean_prcp AS prcp,
+    mean_gust AS gust,
+    mean_fog AS fog,
+    mean_tornado_funnel_cloud AS trnd,
+    mean_thunder AS thunder,
+    mean_snow_ice_pellets AS icep,
+    mean_rain_drizzle AS raind
+  FROM ${ref("weather_features")} wea
+  LEFT JOIN ${ref("rolling_sales_features")} sales
+  ON wea.ctx_date_month = sales.ctx_date_month
+  AND wea.ctx_state_id = sales.ctx_state_id
+  WHERE ctx_item_id IS NOT NULL
+),
+
+rolling AS (
+  SELECT
+    ctx_item_id,
+    ctx_store_id,
+    ctx_date_month,
+
+    -- shared x stats
+    COUNT(x) OVER w AS n,
+    SUM(x) OVER w AS sum_x,
+    SUM(x * x) OVER w AS sum_x2,
+
+    -- temperature
+    SUM(tmp) OVER w AS sum_tmp,
+    SUM(x * tmp) OVER w AS sum_xtmp,
+    SUM(tmp * tmp) OVER w AS sum_tmp2,
+
+    -- visibility
+    SUM(visib) OVER w AS sum_visib,
+    SUM(x * visib) OVER w AS sum_xvisib,
+    SUM(visib * visib) OVER w AS sum_visib2,
+
+    -- wind speed
+    SUM(wdsp) OVER w AS sum_wdsp,
+    SUM(x * wdsp) OVER w AS sum_xwdsp,
+    SUM(wdsp * wdsp) OVER w AS sum_wdsp2,
+
+    -- precipitation
+    SUM(prcp) OVER w AS sum_prcp,
+    SUM(x * prcp) OVER w AS sum_xprcp,
+    SUM(prcp * prcp) OVER w AS sum_prcp2,
+
+    -- gust
+    SUM(gust) OVER w AS sum_gust,
+    SUM(x * gust) OVER w AS sum_xgust,
+    SUM(gust * gust) OVER w AS sum_gust2,
+
+    -- fog
+    SUM(fog) OVER w AS sum_fog,
+    SUM(x * fog) OVER w AS sum_xfog,
+    SUM(fog * fog) OVER w AS sum_fog2,
+
+    -- tornado / funnel cloud
+    SUM(trnd) OVER w AS sum_trnd,
+    SUM(x * trnd) OVER w AS sum_xtrnd,
+    SUM(trnd * trnd) OVER w AS sum_trnd2,
+
+    -- thunder
+    SUM(thunder) OVER w AS sum_thunder,
+    SUM(x * thunder) OVER w AS sum_xthunder,
+    SUM(thunder * thunder) OVER w AS sum_thunder2,
+
+    -- snow / ice pellets
+    SUM(icep) OVER w AS sum_icep,
+    SUM(x * icep) OVER w AS sum_xicep,
+    SUM(icep * icep) OVER w AS sum_icep2,
+
+    -- rain / drizzle
+    SUM(raind) OVER w AS sum_raind,
+    SUM(x * raind) OVER w AS sum_xraind,
+    SUM(raind * raind) OVER w AS sum_raind2
+
+  FROM ts
+  WINDOW w AS (
+    PARTITION BY ctx_item_id, ctx_store_id
+    ORDER BY ctx_date_month
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  )
+)
+
+SELECT
+  ctx_item_id,
+  ctx_store_id,
+  ctx_date_month,
+
+  -- correlations with sales (x)
+  SAFE_DIVIDE(
+    (sum_xtmp * n - sum_x * sum_tmp),
+    SQRT(ABS((n * sum_x2 - POWER(sum_x, 2)) *
+             (n * sum_tmp2 - POWER(sum_tmp, 2))))
+  ) AS fea_corr_sales_temperature_12m,
+
+  SAFE_DIVIDE(
+    (sum_xvisib * n - sum_x * sum_visib),
+    SQRT(ABS((n * sum_x2 - POWER(sum_x, 2)) *
+             (n * sum_visib2 - POWER(sum_visib, 2))))
+  ) AS fea_corr_sales_visib_12m,
+
+  SAFE_DIVIDE(
+    (sum_xwdsp * n - sum_x * sum_wdsp),
+    SQRT(ABS((n * sum_x2 - POWER(sum_x, 2)) *
+             (n * sum_wdsp2 - POWER(sum_wdsp, 2))))
+  ) AS fea_corr_sales_wdsp_12m,
+
+  SAFE_DIVIDE(
+    (sum_xprcp * n - sum_x * sum_prcp),
+    SQRT(ABS((n * sum_x2 - POWER(sum_x, 2)) *
+             (n * sum_prcp2 - POWER(sum_prcp, 2))))
+  ) AS fea_corr_sales_prcp_12m,
+
+  SAFE_DIVIDE(
+    (sum_xgust * n - sum_x * sum_gust),
+    SQRT(ABS((n * sum_x2 - POWER(sum_x, 2)) *
+             (n * sum_gust2 - POWER(sum_gust, 2))))
+  ) AS fea_corr_sales_gust_12m,
+
+  SAFE_DIVIDE(
+    (sum_xfog * n - sum_x * sum_fog),
+    SQRT(ABS((n * sum_x2 - POWER(sum_x, 2)) *
+             (n * sum_fog2 - POWER(sum_fog, 2))))
+  ) AS fea_corr_sales_fog_12m,
+
+  SAFE_DIVIDE(
+    (sum_xtrnd * n - sum_x * sum_trnd),
+    SQRT(ABS((n * sum_x2 - POWER(sum_x, 2)) *
+             (n * sum_trnd2 - POWER(sum_trnd, 2))))
+  ) AS fea_corr_sales_tornado_funnel_cloud_12m,
+
+  SAFE_DIVIDE(
+    (sum_xthunder * n - sum_x * sum_thunder),
+    SQRT(ABS((n * sum_x2 - POWER(sum_x, 2)) *
+             (n * sum_thunder2 - POWER(sum_thunder, 2))))
+  ) AS fea_corr_sales_thunder_12m,
+
+  SAFE_DIVIDE(
+    (sum_xicep * n - sum_x * sum_icep),
+    SQRT(ABS((n * sum_x2 - POWER(sum_x, 2)) *
+             (n * sum_icep2 - POWER(sum_icep, 2))))
+  ) AS fea_corr_sales_snow_ice_pellets_12m,
+
+  SAFE_DIVIDE(
+    (sum_xraind * n - sum_x * sum_raind),
+    SQRT(ABS((n * sum_x2 - POWER(sum_x, 2)) *
+             (n * sum_raind2 - POWER(sum_raind, 2))))
+  ) AS fea_corr_sales_rain_drizzle_12m
+
+FROM rolling
+ORDER BY ctx_item_id, ctx_store_id, ctx_date_month;
