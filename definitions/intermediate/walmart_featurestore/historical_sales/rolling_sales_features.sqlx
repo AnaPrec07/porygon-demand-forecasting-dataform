@@ -2,7 +2,7 @@ config {
   type: "table",
   schema: "walmart_featurestore",
   description: "Rolling sales features per multiple hierarchy levels.",
-  tags: ["intermediate", "walmart", "features"],
+  tags: ["intermediate", "walmart", "features", "historical_sales"],
   assertions: {
     nonNull: [
       "ctx_date_month",

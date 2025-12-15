@@ -4,7 +4,7 @@ config {
   schema: "walmart_featurestore",
   name: "historical_stockout_features",
   description: "Historical stockout features for CA_1 store, item and department level.",
-  tags: ["intermediate", "walmart", "features"],
+  tags: ["intermediate", "walmart", "features", "historical_sales"],
   assertions: {
     nonNull: [
       "ctx_date_month",
