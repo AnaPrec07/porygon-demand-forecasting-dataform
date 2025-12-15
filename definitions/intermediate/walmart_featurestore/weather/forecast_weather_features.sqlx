@@ -68,4 +68,4 @@ WINDOW w AS (
   PARTITION BY ctx_state_id
   ORDER BY ctx_date_month
   ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
-);
+)

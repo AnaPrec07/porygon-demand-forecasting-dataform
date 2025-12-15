@@ -176,4 +176,4 @@ SELECT
   ) AS fea_corr_sales_rain_drizzle_12m
 
 FROM rolling
-ORDER BY ctx_item_id, ctx_store_id, ctx_date_month;
+ORDER BY ctx_item_id, ctx_store_id, ctx_date_month
