@@ -345,34 +345,6 @@ config {
     mean_rain_drizzle_roll_avg_12_months,
     mean_rain_drizzle_roll_std_12_months,
 
-    -- demographic cencus features
-    fea_nonfamily_households,
-    fea_family_households,
-    fea_total_pop,
-    fea_commuters_by_public_transportation,
-    fea_median_income,
-    fea_income_per_capita,
-    fea_vacant_housing_units,
-    fea_median_rent,
-    fea_percent_income_spent_on_rent,
-    fea_median_age,
-    fea_families_with_young_children,
-    fea_commute_10_14_mins,
-    fea_commute_25_29_mins,
-    fea_commute_45_59_mins,
-    fea_income_20000_24999,
-    fea_income_40000_44999,
-    fea_income_60000_74999,
-    fea_income_150000_199999,
-    fea_households_retirement_income,
-    fea_employed_pop,
-    fea_unemployed_pop,
-    fea_four_more_cars,
-    fea_bachelors_degree_or_higher_25_64,
-    fea_gini_index,
-    fea_in_school,
-    fea_in_undergrad_college,
-
     -- economic indicator features
     fea_wi_unemployment_rate,
     fea_tx_unemployment_rate,
@@ -776,9 +748,6 @@ LEFT JOIN ${ref("encoded_features")} enc
 LEFT JOIN ${ref("weather_features")} wea_feas
     ON wea_feas.ctx_state_id = tgt.ctx_state_id
     AND wea_feas.ctx_date_month = tgt.ctx_date_month
-LEFT JOIN ${ref("population_features")} pop_feas
-    ON pop_feas.ctx_state_id = tgt.ctx_state_id
-    AND ctx_date_year = EXTRACT(YEAR FROM tgt.ctx_date_month)
 LEFT JOIN ${ref("economic_indicator_features")} econ_feas
     ON econ_feas.ctx_date_month = tgt.ctx_date_month
 LEFT JOIN ${ref("rolling_sales_features")} roll_feas
