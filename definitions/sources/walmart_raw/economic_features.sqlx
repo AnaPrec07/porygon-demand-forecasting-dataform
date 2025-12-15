@@ -1,6 +1,6 @@
 config {
   type: "operations",
-  tags: ["setup"],
+  tags: ["setup", "economic_indicator"],
   hasOutput: true,
   schema: "walmart_raw",
   name: "economic_features"

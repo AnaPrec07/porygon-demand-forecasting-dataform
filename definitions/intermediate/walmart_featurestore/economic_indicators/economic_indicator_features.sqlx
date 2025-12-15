@@ -2,7 +2,7 @@ config {
   type: "table",
   schema: "walmart_featurestore",
   description: "Rolling economic indicator features.",
-  tags: ["intermediate", "walmart", "features"],
+  tags: ["intermediate", "walmart", "features", "economic_indicator"],
   assertions: {
     nonNull: [
       "ctx_date_month",
