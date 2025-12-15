@@ -8,12 +8,10 @@ config {
         nonNull: [
         "ctx_date_month",
         "ctx_item_id",
-        "ctx_store_id",
         ],
         uniqueKey: [
         "ctx_date_month",
         "ctx_item_id",
-        "ctx_store_id",
         ],
     }
 }
