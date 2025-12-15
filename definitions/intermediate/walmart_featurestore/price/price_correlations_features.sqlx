@@ -19,9 +19,9 @@ config {
 
 WITH ts AS (
   SELECT
-    ctx_item_id,
-    ctx_store_id,
-    ctx_date_month,
+    price.ctx_item_id,
+    price.ctx_store_id,
+    price.ctx_date_month,
     fea_item_monthly_sales AS x,
     fea_price_pct_change_3m AS pc3m,
     fea_item_price_avg AS pav,
