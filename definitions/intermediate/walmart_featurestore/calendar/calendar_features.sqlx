@@ -2,7 +2,7 @@ config {
   type: "table",
   schema: "walmart_featurestore",
   description: "Calendar features.",
-  tags: ["intermediate", "walmart", "features"],
+  tags: ["intermediate", "walmart", "features", "calendar"],
   assertions: {
     nonNull: [
       "ctx_date_month",

@@ -1,6 +1,6 @@
 config {
   type: "operations",
-  tags: ["setup"],
+  tags: ["setup", "calendar"],
   hasOutput: true,
   schema: "walmart_raw",
   name: "calendar"
