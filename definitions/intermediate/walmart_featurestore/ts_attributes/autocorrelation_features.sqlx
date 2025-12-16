@@ -3,7 +3,7 @@ config {
   schema: "walmart_featurestore",
   name: "autocorrelation_features",
   description: "Autocorrelation features for item/store/month.",
-  tags: ["intermediate", "walmart", "features"],
+  tags: ["intermediate", "walmart", "features", "ts_attributes"],
   assertions: {
     nonNull: [
       "ctx_date_month",
