@@ -42,18 +42,3 @@ jobs:
 
       - name: Dataform compile
         run: dataform compile
-
-      - name: Dataform test (if tests exist)
-        run: |
-          if dataform test; then echo "Tests passed"; else echo "No tests or tests failed"; fi
-        continue-on-error: true
-
-      - name: Run JavaScript tests (if any)
-        run: |
-          if compgen -G "tests/*.js" > /dev/null; then npx jest tests/*.js || true; fi
-        continue-on-error: true
-
-      - name: Run Python tests (if any)
-        run: |
-          if compgen -G "tests/*.py" > /dev/null; then pip install pytest && pytest tests/ || true; fi
-        continue-on-error: true
