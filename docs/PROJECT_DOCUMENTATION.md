@@ -9,12 +9,6 @@ This project implements a professional Dataform workflow for demand forecasting,
 - `docs/`: Documentation and data model diagrams.
 - `workflow_settings.yaml`: Dataform workflow configuration.
 
-## Best Practices
-- Use modular SQLX and JS includes for maintainability.
-- Document all tables and features.
-- Use version control and code reviews for all changes.
-- Keep sensitive data out of the repository (use environment variables).
-
 ## References
 - [Dataform Documentation](https://docs.dataform.co/)
 - [SQLX Language Guide](https://docs.dataform.co/sqlx/)

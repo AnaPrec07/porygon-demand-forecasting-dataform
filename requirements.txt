@@ -1,0 +1,7 @@
+# Example requirements for data and SQLX/JS project
+# Add or remove as needed for your environment
+pandas
+numpy
+sqlalchemy
+pytest
+# If you use Dataform JS APIs, add Node.js dependencies in package.json

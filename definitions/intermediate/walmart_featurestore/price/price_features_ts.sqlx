@@ -266,36 +266,36 @@ SELECT
   fea_item_vs_state_price_ratio,
   
   -- Rolling average features for item prices (3, 6, 12 months)
-  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_min", partitionBy="ctx_item_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_max", partitionBy="ctx_item_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_std", partitionBy="ctx_item_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_avg", partitionBy="ctx_item_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_min", "ctx_item_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_max", "ctx_item_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_std", "ctx_item_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_avg", "ctx_item_id")},
   
   -- Rolling average features for item store prices (3, 6, 12 months)
-  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_min", partitionBy="ctx_item_id, ctx_store_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_max", partitionBy="ctx_item_id, ctx_store_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_std", partitionBy="ctx_item_id, ctx_store_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_avg", partitionBy="ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_min", "ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_max", "ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_std", "ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_avg", "ctx_item_id, ctx_store_id")},
 
   -- Rolling average features for store prices (3, 6, 12 months)
-  ${window_functions.generateRollAvgSTDEVPartition("fea_store_price_avg", partitionBy="ctx_store_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_store_price_std", partitionBy="ctx_store_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_store_unique_items", partitionBy="ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_store_price_avg", "ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_store_price_std", "ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_store_unique_items", "ctx_store_id")},
   
   -- Rolling average features for department prices (3, 6, 12 months)
-  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_avg", partitionBy="ctx_dept_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_std", partitionBy="ctx_dept_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_min", partitionBy="ctx_dept_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_max", partitionBy="ctx_dept_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_unique_items", partitionBy="ctx_dept_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_avg", "ctx_dept_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_std", "ctx_dept_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_min", "ctx_dept_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_max", "ctx_dept_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_unique_items", "ctx_dept_id")},
 
   -- Rolling average features for state prices (3, 6, 12 months)
-  ${window_functions.generateRollAvgSTDEVPartition("fea_state_price_avg", partitionBy="ctx_state_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_state_price_std", partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_state_price_avg", "ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_state_price_std", "ctx_state_id")},
   
   -- Rolling average features for relative prices (3, 6, 12 months)
-  ${window_functions.generateRollAvgSTDEVPartition("fea_item_vs_store_price_ratio", partitionBy="ctx_item_id, ctx_store_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_item_vs_dept_price_ratio", partitionBy="ctx_item_id, ctx_store_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_item_vs_state_price_ratio", partitionBy="ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_vs_store_price_ratio", "ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_vs_dept_price_ratio", "ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_vs_state_price_ratio", "ctx_item_id, ctx_store_id")},
 
 FROM combined_features
