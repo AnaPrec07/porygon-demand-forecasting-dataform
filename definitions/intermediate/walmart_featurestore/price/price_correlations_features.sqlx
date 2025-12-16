@@ -2,7 +2,7 @@ config {
   type: "table",
   schema: "walmart_featurestore",
   description: "Price features with time series rolling averages at multiple hierarchy levels.",
-  tags: ["intermediate", "walmart", "features"],
+  tags: ["intermediate", "walmart", "features", "price"],
   assertions: {
     nonNull: [
       "ctx_date_month",
