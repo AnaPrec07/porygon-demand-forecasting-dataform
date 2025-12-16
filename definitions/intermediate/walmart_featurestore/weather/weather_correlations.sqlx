@@ -2,7 +2,7 @@ config {
   type: "table",
   schema: "walmart_featurestore",
   description: "Rolling weather feature correlations per item-store.",
-  tags: ["intermediate", "walmart", "features"],
+  tags: ["intermediate", "walmart", "features", "weather"],
   assertions: {
     nonNull: [
       "ctx_date_month",

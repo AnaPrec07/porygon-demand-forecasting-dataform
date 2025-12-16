@@ -3,7 +3,7 @@ config {
   type: "table",
   schema: "walmart_featurestore",
   description: "Rolling weather features per state.",
-  tags: ["intermediate", "walmart", "features"],
+  tags: ["intermediate", "walmart", "features", "weather"],
   assertions: {
     nonNull: [
       "ctx_date_month",
