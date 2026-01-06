@@ -27,7 +27,7 @@ WITH last_date_dataframe AS (
     THEN ctx_date 
     ELSE NULL 
   END ctx_last_dales_date
-  FROM `porygon-pipelines.walmart_raw.daily_sales_melted`
+  FROM `porygon-pipelines.walmart_targets_and_filters.daily_sales_melted`
   WHERE store_id = "CA_1"
 ),
 last_day_ff_df AS (
