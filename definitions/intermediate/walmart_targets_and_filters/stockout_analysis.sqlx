@@ -32,7 +32,7 @@ GROUP BY item_id
 WITH remove_zero_sales_days AS (
   SELECT 
   *
-  FROM `porygon-pipelines.walmart_raw.daily_sales_melted`
+  FROM `porygon-pipelines.walmart_targets_and_filters.daily_sales_melted`
   WHERE daily_sales > 0
   AND store_id = "CA_1"
 ),
