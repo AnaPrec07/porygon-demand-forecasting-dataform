@@ -1,0 +1,19 @@
+config {
+  type: "operations",
+  tags: ["setup", "stockout"],
+  hasOutput: true,
+  schema: "walmart_raw",
+  name: "stockout_thresholds"
+}
+
+CREATE OR REPLACE EXTERNAL TABLE ${self()}
+(
+  ctx_dept_id STRING,
+  ctx_store_id STRING,
+  stockout_thresholds INTEGER
+)
+OPTIONS (
+  format = 'CSV',
+  uris = ['https://storage.googleapis.com/m5_raw/ca_thresholds.csv'],
+  skip_leading_rows = 1
+);
