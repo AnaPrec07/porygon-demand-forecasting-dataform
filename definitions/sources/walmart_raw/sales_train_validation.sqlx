@@ -1,6 +1,6 @@
 config {
   type: "operations",
-  tags: ["setup"],
+  tags: ["raw"],
   hasOutput: true,
   schema: "walmart_raw",
   name: "sales_train_validation"

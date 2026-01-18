@@ -3,18 +3,19 @@ config {
   tags: ["raw"],
   hasOutput: true,
   schema: "walmart_raw",
-  name: "sell_price"
+  name: "stockout_thresholds"
 }
+
+
 
 CREATE OR REPLACE EXTERNAL TABLE ${self()}
 (
-  store_id STRING,
-  item_id STRING,
-  wm_yr_wk INTEGER,
-  sell_price FLOAT64,
+  ctx_dept_id STRING,
+  ctx_store_id STRING,
+  stockout_threshold INTEGER,
 )
 OPTIONS (
   format = 'CSV',
-  uris = ['https://storage.googleapis.com/m5_raw/sell_prices.csv'],
+  uris = ['https://storage.googleapis.com/m5_raw/ca_thresholds.csv'],
   skip_leading_rows = 1
 );
