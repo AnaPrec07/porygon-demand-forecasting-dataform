@@ -2,7 +2,7 @@ config {
   type: "table",
   schema: "walmart_targets_and_filters",
   name: "stockout_analysis",
-  description: "Stockout thresholds and sales ratios for CA_1 items."
+  description: "Stockout thresholds and sales ratios for CA_1 items.",
   tags: ["intermediate", "analysis"],
   assertions: {
     nonNull: [
@@ -10,7 +10,7 @@ config {
       "ctx_store_id",
       "item_id"
     ],
-    uniqueKeys: [
+    uniqueKey: [
       "ctx_date",
       "ctx_store_id",
       "item_id"
