@@ -25,7 +25,7 @@ WITH raw_sales AS (
     state_id AS ctx_state_id,
     store_id AS ctx_store_id,
     cat_id AS ctx_cat_id,
-    dept_id AS ctx_detp_id,
+    dept_id AS ctx_dept_id,
     item_id AS ctx_item_id
   FROM (
     SELECT *
