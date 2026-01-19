@@ -29,7 +29,7 @@ The following checks will be configured directly within SQLX file configurations
 - Implementation: `uniqueKey` configuration parameter
 
 #### 1.2 Non-Null Assertions
-- Ensures critical columns do not contain NULL values
+- Ensures critical columns do not contain NULL values. This design considers critical only primary key fields.
 - Applied to mandatory business fields
 - Implementation: `nonNull` configuration parameter
 
