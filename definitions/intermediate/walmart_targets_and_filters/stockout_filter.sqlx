@@ -2,7 +2,20 @@ config {
   type: "table",
   schema: "walmart_targets_and_filters",
   name: "stockout_filter",
-  description: "Stockout filter table for identifying stockout events and their leads."
+  description: "Stockout filter table for identifying stockout events and their leads.",
+  tags: ["intermediate", "stockout_filter"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_store_id",
+      "item_id"
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_store_id",
+      "item_id"
+    ],
+  }
 }
 
 WITH is_stockout_cte AS (

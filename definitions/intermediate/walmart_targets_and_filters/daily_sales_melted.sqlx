@@ -2,7 +2,19 @@ config {
   type: "table",
   schema: "walmart_targets_and_filters",
   description: "Daily sales melted table.",
-  tags: ["intermediate", "filter"]
+  tags: ["intermediate", "stockout_filter"],
+  assertions: {
+    nonNull: [
+      "ctx_date",
+      "ctx_store_id",
+      "ctx_item_id"
+    ],
+    uniqueKey: [
+      "ctx_date",
+      "ctx_store_id",
+      "ctx_item_id"
+    ],
+  }
 }
 
 
@@ -10,11 +22,11 @@ WITH raw_sales AS (
   SELECT
     day,
     SUM(sales) AS daily_sales,
-    state_id,
-    store_id,
-    cat_id,
-    dept_id,
-    item_id
+    state_id AS ctx_state_id,
+    store_id AS ctx_store_id,
+    cat_id AS ctx_cat_id,
+    dept_id AS ctx_dept_id,
+    item_id AS ctx_item_id
   FROM (
     SELECT *
     FROM ${ref("sales_train_validation")} 
