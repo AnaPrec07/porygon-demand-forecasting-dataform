@@ -28,36 +28,36 @@ WITH last_date_dataframe AS (
     ELSE NULL 
   END ctx_last_dales_date
   FROM `porygon-pipelines.walmart_targets_and_filters.daily_sales_melted`
-  WHERE store_id = "CA_1"
+  WHERE ctx_store_id = "CA_1"
 ),
 last_day_ff_df AS (
 SELECT 
   *,
   LAST_VALUE(ctx_last_dales_date IGNORE NULLS) OVER (
-    PARTITION BY item_id, store_id
+    PARTITION BY ctx_item_id, ctx_store_id
     ORDER BY ctx_date
     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
   ) AS last_sale_ff
 FROM last_date_dataframe
-ORDER BY store_id, item_id, ctx_date
+ORDER BY ctx_store_id, ctx_item_id, ctx_date
 ),
 daily_level_patterns AS (
   SELECT 
     ctx_date,
     daily_sales,
-    store_id,
-    dept_id,
-    item_id,
+    ctx_store_id,
+    ctx_dept_id,
+    ctx_item_id,
     last_sale_ff,
     DATE_DIFF(ctx_date,last_sale_ff, DAY) AS days_since_last_sale
     FROM last_day_ff_df
-  ORDER BY store_id, item_id, ctx_date
+  ORDER BY ctx_store_id, ctx_item_id, ctx_date
 ),
 item_level AS (
   SELECT 
-  dept_id AS ctx_dept_id,
-  store_id AS ctx_store_id, 
-  item_id AS ctx_item_id, 
+  ctx_dept_id,
+  ctx_store_id, 
+  ctx_item_id, 
   DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
   MIN(daily_sales) AS fea_item_min_daily_sales,
   APPROX_QUANTILES(daily_sales, 4)[OFFSET(1)] AS fea_item_daily_salesq25,
@@ -71,15 +71,15 @@ item_level AS (
   MAX(days_since_last_sale) AS fea_item_max_days_since_last_sale,
   FROM daily_level_patterns
   GROUP BY 
-  store_id,
-  item_id,
-  dept_id,
+  ctx_store_id,
+  ctx_item_id,
+  ctx_dept_id,
   DATE_TRUNC(ctx_date, MONTH)
 ),
 dept_level AS (
   SELECT 
-  dept_id AS ctx_dept_id,
-  store_id AS ctx_store_id, 
+  ctx_dept_id,
+  ctx_store_id, 
   DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
   MIN(daily_sales) AS fea_dept_min_daily_sales,
   APPROX_QUANTILES(daily_sales, 4)[OFFSET(1)] AS fea_dept_daily_salesq25,
@@ -93,8 +93,8 @@ dept_level AS (
   MAX(days_since_last_sale) AS fea_dept_max_days_since_last_sale,
   FROM daily_level_patterns
   GROUP BY 
-  store_id,
-  dept_id,
+  ctx_store_id,
+  ctx_dept_id,
   DATE_TRUNC(ctx_date, MONTH)
 ),
 joined_ctex AS (
