@@ -3,6 +3,19 @@ config {
   schema: "walmart_targets_and_filters",
   name: "stockout_analysis",
   description: "Stockout thresholds and sales ratios for CA_1 items."
+  tags: ["intermediate", "analysis"],
+  assertions: {
+    nonNull: [
+      "ctx_date",
+      "ctx_store_id",
+      "item_id"
+    ],
+    uniqueKeys: [
+      "ctx_date",
+      "ctx_store_id",
+      "item_id"
+    ],
+  }
 }
 
 WITH remove_zero_sales_days AS (
@@ -53,4 +66,4 @@ count(*)/(DATE_DIFF(MAX(ctx_date),MIN(ctx_date), MONTH)) AS ratio_sales_during_l
 APPROX_QUANTILES(days_since_last_sale, 100)[OFFSET(97)] AS ctx_item_stockout_threshold,
 FROM zero_sales_days_diff
 GROUP BY item_id
-)
+

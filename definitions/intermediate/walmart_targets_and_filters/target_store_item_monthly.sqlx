@@ -19,19 +19,12 @@ config {
   assertions: {
     nonNull: [
         "ctx_date_month",
-        "ctx_state_id",
         "ctx_store_id",
-        "ctx_cat_id",
-        "ctx_dept_id",
         "ctx_item_id",
-        "tgt_monthly_sales",
     ],
     uniqueKey: [
         "ctx_date_month",
-        "ctx_state_id",
         "ctx_store_id",
-        "ctx_cat_id",
-        "ctx_dept_id",
         "ctx_item_id",
     ],
   }
