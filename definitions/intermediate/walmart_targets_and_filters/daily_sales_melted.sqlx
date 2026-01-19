@@ -7,12 +7,12 @@ config {
     nonNull: [
       "ctx_date",
       "ctx_store_id",
-      "item_id"
+      "ctx_item_id"
     ],
-    uniqueKeys: [
+    uniqueKey: [
       "ctx_date",
       "ctx_store_id",
-      "item_id"
+      "ctx_item_id"
     ],
   }
 }
