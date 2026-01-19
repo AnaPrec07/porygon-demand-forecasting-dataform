@@ -9,7 +9,7 @@ config {
       "ctx_store_id",
       "ctx_item_id"
     ],
-    uniqueKeys: [
+    uniqueKey: [
       "ctx_date",
       "ctx_store_id",
       "ctx_item_id"
