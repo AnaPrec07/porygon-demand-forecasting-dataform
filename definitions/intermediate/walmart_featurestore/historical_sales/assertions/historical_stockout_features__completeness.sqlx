@@ -1,0 +1,33 @@
+config {
+  type: "assertion",
+  name: "historical_stockout_features__completeness",
+  description: "Asserts that all expected (month, item, store) combinations exist in historical_stockout_features.",
+  tags: ["intermediate", "walmart", "features", "historical_sales", "Stockout_filter"],
+}
+
+-- Define the universe of expected (month, item, store) combinations
+WITH universe AS (
+  SELECT DISTINCT
+    DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
+    ctx_item_id,
+    ctx_store_id
+  FROM ${ref("daily_sales_melted")}
+  WHERE ctx_store_id = "CA_1"
+),
+actual AS (
+  SELECT
+    ctx_date_month,
+    ctx_item_id,
+    ctx_store_id
+  FROM ${ref("historical_stockout_features")}
+)
+SELECT
+  u.ctx_date_month,
+  u.ctx_item_id,
+  u.ctx_store_id
+FROM universe u
+LEFT JOIN actual a
+  ON u.ctx_date_month = a.ctx_date_month
+  AND u.ctx_item_id = a.ctx_item_id
+  AND u.ctx_store_id = a.ctx_store_id
+WHERE a.ctx_date_month IS NULL

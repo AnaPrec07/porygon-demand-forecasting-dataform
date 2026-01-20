@@ -4,7 +4,7 @@ config {
   schema: "walmart_featurestore",
   name: "historical_stockout_features",
   description: "Historical stockout features for CA_1 store, item and department level.",
-  tags: ["intermediate", "walmart", "features", "historical_sales"],
+  tags: ["intermediate", "walmart", "features", "historical_sales", "Stockout_filter"],
   assertions: {
     nonNull: [
       "ctx_date_month",
@@ -27,7 +27,7 @@ WITH last_date_dataframe AS (
     THEN ctx_date 
     ELSE NULL 
   END ctx_last_dales_date
-  FROM `porygon-pipelines.walmart_targets_and_filters.daily_sales_melted`
+  FROM ${ref("daily_sales_melted")}
   WHERE ctx_store_id = "CA_1"
 ),
 last_day_ff_df AS (
