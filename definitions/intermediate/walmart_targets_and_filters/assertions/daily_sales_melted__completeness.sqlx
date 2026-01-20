@@ -14,7 +14,8 @@ FROM (
     s.store_id AS ctx_store_id,
     s.item_id AS ctx_item_id,
   FROM ${ref("calendar")} cal
-  CROSS JOIN (SELECT DISTINCT store_id FROM ${ref("sales_train_validation")}) s
+  CROSS JOIN (SELECT DISTINCT store_id, item_id FROM ${ref("sales_train_validation")}) s
+  WHERE cal.date <= "2016-04-24"
 ) expected
 LEFT JOIN ${ref("daily_sales_melted")} actual
   ON expected.ctx_date = actual.ctx_date
