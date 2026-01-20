@@ -15,7 +15,10 @@ config {
       "ctx_store_id",
       "item_id"
     ],
-  }
+  },
+  dependencies: [
+    "walmart_targets_and_filters.assertions.completeness.daily_sales_melted__completeness"
+  ]
 }
 
 WITH is_stockout_cte AS (
