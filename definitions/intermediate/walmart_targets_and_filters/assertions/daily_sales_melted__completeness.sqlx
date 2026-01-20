@@ -7,7 +7,7 @@ config {
 SELECT
   expected.ctx_date,
   expected.ctx_store_id,
-  expected.item_id
+  expected.ctx_item_id
 FROM (
   SELECT
     cal.date AS ctx_date,
@@ -20,5 +20,5 @@ FROM (
 LEFT JOIN ${ref("daily_sales_melted")} actual
   ON expected.ctx_date = actual.ctx_date
   AND expected.ctx_store_id = actual.ctx_store_id
-  AND expected.item_id = actual.ctx_item_id
+  AND expected.ctx_item_id = actual.ctx_item_id
 WHERE actual.ctx_date IS NULL
