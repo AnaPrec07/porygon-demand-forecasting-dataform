@@ -1,0 +1,31 @@
+config {
+  type: "assertion",
+  name: "stockout_filter__accuracy",
+  description: "Asserts that stockout indicators are accuraty.",
+  tags: ["intermediate", "stockout_filter"],
+}
+
+WITH expected AS (
+  SELECT * FROM ${ref("stockout_thresholds")}
+),
+actuals AS (
+  SELECT 
+  MAX(stck_indicator_max_days_since_last_sale) AS max_days,
+  ctx_dept_id,
+  ctx_store_id
+  FROM ${ref("stockout_filter")}
+  WHERE is_stockout = 0 
+  GROUP BY 
+  ctx_dept_id,
+  ctx_store_id
+)
+SELECT 
+expct.*,
+act.max_days
+FROM expected expct
+LEFT JOIN actuals act
+ON expct.ctx_dept_id = act.ctx_dept_id
+AND expct.ctx_store_id = act.ctx_store_id
+WHERE act.max_days > expct.stockout_thresholds
+OR act.ctx_dept_id IS NULL
+OR act.ctx_store_id IS NULL
