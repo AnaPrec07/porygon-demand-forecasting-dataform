@@ -15,7 +15,7 @@ config {
     tgt_monthly_sales_lead_3_months: walmart_descriptions.tgt_monthly_sales_lead_3_months,
     tgt_monthly_sales_lead_4_months: walmart_descriptions.tgt_monthly_sales_lead_4_months,
   },
-  tags: ["intermediate"],
+  tags: ["intermediate", "target"],
   assertions: {
     nonNull: [
         "ctx_date_month",
