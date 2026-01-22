@@ -23,9 +23,10 @@ SELECT
     ctx_date_month,
     ctx_store_id,
     ctx_item_id,
-    DENSE_RANK() OVER (ORDER BY ctx_state_id) AS fea_state_id_encoded,
-    DENSE_RANK() OVER (ORDER BY ctx_cat_id) AS fea_cat_id_encoded,
-    DENSE_RANK() OVER (ORDER BY ctx_dept_id) AS fea_dept_id_encoded,
-    DENSE_RANK() OVER (ORDER BY ctx_store_id) AS fea_store_id_encoded,
-    DENSE_RANK() OVER (ORDER BY ctx_item_id) AS fea_item_id_encoded,
+    -- One-hot encoding for categories
+    CASE WHEN ctx_cat_id = "FOODS" THEN 1 ELSE 0 END AS fea_is_foods,
+    CASE WHEN ctx_cat_id = "HOBBIES" THEN 1 ELSE 0 END AS fea_is_hobbies,
+    CASE WHEN ctx_cat_id = "HOUSEHOLD" THEN 1 ELSE 0 END AS fea_is_household,
+    -- One-hot encoding for dept num
+    SPLIT(ctx_dept_id, '_')[OFFSET(1)] AS fea_dept_number,
 FROM ${ref("target_store_item_monthly")}
