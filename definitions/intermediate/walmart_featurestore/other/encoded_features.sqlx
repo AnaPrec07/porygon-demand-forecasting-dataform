@@ -28,5 +28,5 @@ SELECT
     CASE WHEN ctx_cat_id = "HOBBIES" THEN 1 ELSE 0 END AS fea_is_hobbies,
     CASE WHEN ctx_cat_id = "HOUSEHOLD" THEN 1 ELSE 0 END AS fea_is_household,
     -- One-hot encoding for dept num
-    SPLIT(ctx_dept_id, '_')[OFFSET(1)] AS fea_dept_number,
+    CAST(SPLIT(ctx_dept_id, '_')[OFFSET(1)] AS INTEGER)  AS fea_dept_number,
 FROM ${ref("target_store_item_monthly")}
