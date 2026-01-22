@@ -28,17 +28,18 @@ config {
     tgt.ctx_store_id,
 
     -- target fields
-    tgt_monthly_sales_sum_3_next_months,
+    tgt.tgt_monthly_sales * 3 AS tgt_benchmark,
+    tgt.tgt_monthly_sales_sum_3_next_months,
 
     -- stockout filters
-    is_stockout,
-    is_stockout_tgt,
+    stk.is_stockout,
+    stk.is_stockout_tgt,
 
     -- encoded features
-    fea_is_foods,
-    fea_is_hobbies,
-    fea_is_household,
-    fea_dept_number
+    enc.fea_is_foods,
+    enc.fea_is_hobbies,
+    enc.fea_is_household,
+    enc.fea_dept_number
 
 FROM ${ref("target_store_item_monthly")} tgt
 -- join encoded features
