@@ -34,7 +34,19 @@ config {
     is_stockout,
     is_stockout_tgt,
 
+    -- encoded features
+    fea_is_foods,
+    fea_is_hobbies,
+    fea_is_household,
+    fea_dept_number
+
 FROM ${ref("target_store_item_monthly")} tgt
+-- join encoded features
+LEFT JOIN ${ref("encoded_features")} enc
+    ON enc.ctx_date_month = tgt.ctx_date_month
+    AND enc.ctx_item_id = tgt.ctx_item_id
+    AND enc.ctx_store_id = tgt.ctx_store_id
+
 -- join filter_out_outliers
 LEFT JOIN ${ref("stockout_filter")} stk
     ON stk.ctx_date_month = tgt.ctx_date_month
