@@ -17,50 +17,40 @@ WITH intermediate_aggregations AS (
   SELECT 
     DATE_TRUNC(date, MONTH) AS ctx_date_month,
     CAST(weekday IN ("Sunday","Saturday") AS INT64) AS is_weekend,
-    CAST(event_name_1 IS NOT NULL AS INT64) AS is_event_1,
-    CAST(event_name_2 IS NOT NULL AS INT64) AS is_event_2,
+    ((CAST(event_name_1 IS NOT NULL AS INT64)) +  (CAST(event_name_1 IS NOT NULL AS INT64))) AS is_event,
     SIN(2 * ACOS(-1) * EXTRACT(MONTH FROM date) / 12) AS fea_month_sin,
-    SPLIT(d, '_')[OFFSET(1)] AS fea_detrender,
     CASE 
-      WHEN event_type_1 = "Sporting" OR event_type_1 = "Sporting"
+      WHEN event_type_1 = "Sporting" OR event_type_2 = "Sporting"
         THEN 1
       ELSE 0
     END is_sporting_event,
     CASE 
-      WHEN event_type_1 = "Cultural" OR event_type_1 = "Cultural"
+      WHEN event_type_1 = "Cultural" OR event_type_2 = "Cultural"
         THEN 1
       ELSE 0
     END is_cultural_event,
     CASE 
-      WHEN event_type_1 = "National" OR event_type_1 = "National"
+      WHEN event_type_1 = "National" OR event_type_2 = "National"
         THEN 1
       ELSE 0
     END is_national_event,
     CASE 
-      WHEN event_type_1 = "Religious" OR event_type_1 = "Religious"
+      WHEN event_type_1 = "Religious" OR event_type_2 = "Religious"
         THEN 1
       ELSE 0
     END is_religious_event,
-    snap_CA,
-    snap_TX,
-    snap_WI
   FROM ${ref("calendar")}
 ),
 events_at_monthly_level AS (
 SELECT 
   ctx_date_month, 
   SUM(is_weekend) AS fea_is_weekend,
-  SUM(is_event_1) AS fea_is_event_1,
-  SUM(is_event_2) AS fea_is_event_2,
+  SUM(is_event) AS fea_is_event,
   SUM(is_sporting_event) AS fea_is_sporting_event,
   SUM(is_cultural_event) AS fea_is_cultural_event,
   SUM(is_national_event) AS fea_is_national_event,
   SUM(is_religious_event) AS fea_is_religious_event,
-  SUM(snap_CA) AS fea_is_snap_ca,
-  SUM(snap_TX) AS fea_is_snap_tx,
-  SUM(snap_WI) AS fea_is_snap_wi,
   fea_month_sin,
-  MAX(fea_detrender) AS fea_detrender
 FROM intermediate_aggregations
 GROUP BY 
     ctx_date_month, 
@@ -68,30 +58,14 @@ GROUP BY
 )
 SELECT
   ctx_date_month,
-  fea_is_weekend,
-  fea_is_event_1,
-  fea_is_event_2,
-  fea_is_sporting_event,
-  fea_is_cultural_event,
-  fea_is_national_event,
-  fea_is_religious_event,
-  fea_is_snap_ca,
-  fea_is_snap_tx,
-  fea_is_snap_wi,
-  fea_month_sin,
-  fea_detrender,
   SUM(fea_is_weekend) OVER (
     ORDER BY ctx_date_month 
     ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
   ) AS fea_is_weekend_3m,
-  SUM(fea_is_event_1) OVER (
+  SUM(fea_is_event) OVER (
     ORDER BY ctx_date_month 
     ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
-  ) AS fea_is_event_1_3m,
-  SUM(fea_is_event_2) OVER (
-    ORDER BY ctx_date_month 
-    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
-  ) AS fea_is_event_2_3m,
+  ) AS fea_is_event_3m,
   SUM(fea_is_sporting_event) OVER (
     ORDER BY ctx_date_month 
     ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
@@ -104,9 +78,5 @@ SELECT
     ORDER BY ctx_date_month 
     ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
   ) AS fea_is_national_event_3m,
-  SUM(fea_is_religious_event) OVER (
-    ORDER BY ctx_date_month 
-    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
-  ) AS fea_is_snap_ca_3m
   FROM events_at_monthly_level
 
