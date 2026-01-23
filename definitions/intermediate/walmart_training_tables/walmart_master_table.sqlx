@@ -39,14 +39,26 @@ config {
     enc.fea_is_foods,
     enc.fea_is_hobbies,
     enc.fea_is_household,
-    enc.fea_dept_number
+    enc.fea_dept_number,
+
+    -- calendar features
+    cal.fea_is_weekend_3m,
+    cal.fea_is_event_3m,
+    cal.fea_is_sporting_event_3m,
+    cal.fea_is_cultural_event_3m,
+    cal.fea_is_national_event_3m
 
 FROM ${ref("target_store_item_monthly")} tgt
+
 -- join encoded features
 LEFT JOIN ${ref("encoded_features")} enc
     ON enc.ctx_date_month = tgt.ctx_date_month
     AND enc.ctx_item_id = tgt.ctx_item_id
     AND enc.ctx_store_id = tgt.ctx_store_id
+  
+-- join calendar features
+LEFT JOIN ${ref("calendar_features")} cal
+    ON cal.ctx_date_month = tgt.ctx_date_month
 
 -- join filter_out_outliers
 LEFT JOIN ${ref("stockout_filter")} stk
