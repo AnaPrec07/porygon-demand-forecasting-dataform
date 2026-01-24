@@ -67,6 +67,56 @@ config {
     price.fea_item_vs_dept_price_ratio_min,
     price.fea_item_vs_dept_price_ratio_max,
     price.fea_item_vs_dept_price_ratio_std,
+  
+    -- weather features
+    wea.fea_mean_temperature,
+    wea.fea_mean_dewp,
+    wea.fea_mean_visib,
+    wea.fea_mean_wdsp,
+    wea.fea_mean_prcp,
+    wea.fea_mean_sndp,
+    wea.fea_mean_gust,
+    wea.fea_mean_fog,
+    wea.fea_mean_tornado_funnel_cloud,
+    wea.fea_mean_thunder,
+    wea.fea_mean_snow_ice_pellets,
+    wea.fea_mean_rain_drizzle,
+    wea.fea_min_temperature,
+    wea.fea_min_dewp,
+    wea.fea_min_visib,
+    wea.fea_min_wdsp,
+    wea.fea_min_prcp,
+    wea.fea_min_sndp,
+    wea.fea_min_gust,
+    wea.fea_min_fog,
+    wea.fea_min_tornado_funnel_cloud,
+    wea.fea_min_thunder,
+    wea.fea_min_snow_ice_pellets,
+    wea.fea_min_rain_drizzle,
+    wea.fea_max_temperature,
+    wea.fea_max_dewp,
+    wea.fea_max_visib,
+    wea.fea_max_wdsp,
+    wea.fea_max_prcp,
+    wea.fea_max_sndp,
+    wea.fea_max_gust,
+    wea.fea_max_fog,
+    wea.fea_max_tornado_funnel_cloud,
+    wea.fea_max_thunder,
+    wea.fea_max_snow_ice_pellets,
+    wea.fea_max_rain_drizzle,
+    wea.fea_std_temperature,
+    wea.fea_std_dewp,
+    wea.fea_std_visib,
+    wea.fea_std_wdsp,
+    wea.fea_std_prcp,
+    wea.fea_std_sndp,
+    wea.fea_std_gust,
+    wea.fea_std_fog,
+    wea.fea_std_tornado_funnel_cloud,
+    wea.fea_std_thunder,
+    wea.fea_std_snow_ice_pellets,
+    wea.fea_std_rain_drizzle,
     
 FROM ${ref("target_store_item_monthly")} tgt
 
@@ -90,6 +140,11 @@ LEFT JOIN ${ref("price_features_ts")} price
     ON price.ctx_date_month = tgt.ctx_date_month
     AND price.ctx_item_id = tgt.ctx_item_id
     AND price.ctx_store_id = tgt.ctx_store_id
+
+-- join weather features
+LEFT JOIN ${ref("weather_features")} wea
+    ON wea.ctx_date_month = tgt.ctx_date_month
+    AND wea.ctx_state_id = tgt.ctx_state_id
 
 -- join filter_out_outliers
 LEFT JOIN ${ref("stockout_filter")} stk
