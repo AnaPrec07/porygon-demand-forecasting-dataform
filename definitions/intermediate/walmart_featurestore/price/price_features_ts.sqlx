@@ -27,7 +27,6 @@ WITH price_with_date AS (
     DATE_TRUNC(c.date, MONTH) AS date_month,
     -- Extract hierarchy from item_id (e.g., HOBBIES_1_001)
     SPLIT(p.item_id, '_')[OFFSET(0)] AS dept_id,
-    SUBSTR(p.store_id, 1, 2) AS state_id
   FROM ${ref("sell_price")} p
   INNER JOIN ${ref("calendar")} c
     ON p.wm_yr_wk = c.wm_yr_wk
@@ -94,8 +93,6 @@ SELECT
   ip.date_month AS ctx_date_month,
   ip.store_id AS ctx_store_id,
   ip.item_id AS ctx_item_id,
-  ip.dept_id AS ctx_dept_id,
-  ip.state_id AS ctx_state_id,
   
   -- Item-Store-level features
   ip.fea_item_store_price_avg,
