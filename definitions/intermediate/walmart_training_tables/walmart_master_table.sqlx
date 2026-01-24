@@ -117,6 +117,28 @@ config {
     wea.fea_std_thunder,
     wea.fea_std_snow_ice_pellets,
     wea.fea_std_rain_drizzle,
+  
+    -- historical stockout features
+    hist_stckt.fea_item_min_daily_sales,
+    hist_stckt.fea_item_daily_salesq25,
+    hist_stckt.fea_item_daily_salesq50,
+    hist_stckt.fea_item_daily_salesq75,
+    hist_stckt.fea_item_max_daily_sales,
+    hist_stckt.fea_item_min_days_since_last_sale,
+    hist_stckt.fea_item_days_since_last_saleq25,
+    hist_stckt.fea_item_days_since_last_saleq50,
+    hist_stckt.fea_item_days_since_last_saleq75,
+    hist_stckt.fea_item_max_days_since_last_sale,
+    hist_stckt.fea_dept_min_daily_sales,
+    hist_stckt.fea_dept_daily_salesq25,
+    hist_stckt.fea_dept_daily_salesq50,
+    hist_stckt.fea_dept_daily_salesq75,
+    hist_stckt.fea_dept_max_daily_sales,
+    hist_stckt.fea_dept_min_days_since_last_sale,
+    hist_stckt.fea_dept_days_since_last_saleq25,
+    hist_stckt.fea_dept_days_since_last_saleq50,
+    hist_stckt.fea_dept_days_since_last_saleq75,
+    hist_stckt.fea_dept_max_days_since_last_sale,
     
 FROM ${ref("target_store_item_monthly")} tgt
 
@@ -145,6 +167,12 @@ LEFT JOIN ${ref("price_features_ts")} price
 LEFT JOIN ${ref("weather_features")} wea
     ON wea.ctx_date_month = tgt.ctx_date_month
     AND wea.ctx_state_id = tgt.ctx_state_id
+
+-- join historical stockout features
+LEFT JOIN ${ref("historical_stockout_features")} hist_stckt
+    ON hist_stckt.ctx_date_month = tgt.ctx_date_month
+    AND hist_stckt.ctx_item_id = tgt.ctx_item_id
+    AND hist_stckt.ctx_store_id = tgt.ctx_store_id
 
 -- join filter_out_outliers
 LEFT JOIN ${ref("stockout_filter")} stk
