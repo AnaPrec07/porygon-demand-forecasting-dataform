@@ -46,8 +46,11 @@ config {
     cal.fea_is_event_3m,
     cal.fea_is_sporting_event_3m,
     cal.fea_is_cultural_event_3m,
-    cal.fea_is_national_event_3m
+    cal.fea_is_national_event_3m,
 
+    -- longevity features
+    long.fea_item_longevity_months
+    
 FROM ${ref("target_store_item_monthly")} tgt
 
 -- join encoded features
@@ -59,6 +62,11 @@ LEFT JOIN ${ref("encoded_features")} enc
 -- join calendar features
 LEFT JOIN ${ref("calendar_features")} cal
     ON cal.ctx_date_month = tgt.ctx_date_month
+
+-- join longevity feature
+LEFT JOIN ${ref("item_longevity_features")} long
+  ON long.ctx_date_month = tgt.ctx_date_month
+  AND long.ctx_item_id = tgt.ctx_item_id
 
 -- join filter_out_outliers
 LEFT JOIN ${ref("stockout_filter")} stk
