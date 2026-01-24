@@ -122,28 +122,4 @@ joined_ctex AS (
 )
 SELECT
 jcte.*,
--- item timeseries daily sales.
-${window_functions.generateRollAvgSTDEVPartition("fea_item_min_daily_sales")},
-${window_functions.generateRollAvgSTDEVPartition("fea_item_daily_salesq25")},
-${window_functions.generateRollAvgSTDEVPartition("fea_item_daily_salesq50")},
-${window_functions.generateRollAvgSTDEVPartition("fea_item_daily_salesq75")},
-${window_functions.generateRollAvgSTDEVPartition("fea_item_max_daily_sales")},
--- item timeseries days without sales.
-${window_functions.generateRollAvgSTDEVPartition("fea_item_min_days_since_last_sale")},
-${window_functions.generateRollAvgSTDEVPartition("fea_item_days_since_last_saleq25")},
-${window_functions.generateRollAvgSTDEVPartition("fea_item_days_since_last_saleq50")},
-${window_functions.generateRollAvgSTDEVPartition("fea_item_days_since_last_saleq75")},
-${window_functions.generateRollAvgSTDEVPartition("fea_item_max_days_since_last_sale")},
--- dept timeseries daily sales.
-${window_functions.generateRollAvgSTDEVPartition("fea_dept_min_daily_sales")},
-${window_functions.generateRollAvgSTDEVPartition("fea_dept_daily_salesq25")},
-${window_functions.generateRollAvgSTDEVPartition("fea_dept_daily_salesq50")},
-${window_functions.generateRollAvgSTDEVPartition("fea_dept_daily_salesq75")},
-${window_functions.generateRollAvgSTDEVPartition("fea_dept_max_daily_sales")},
--- dept timeseries days without sales.
-${window_functions.generateRollAvgSTDEVPartition("fea_dept_min_days_since_last_sale")},
-${window_functions.generateRollAvgSTDEVPartition("fea_dept_days_since_last_saleq25")},
-${window_functions.generateRollAvgSTDEVPartition("fea_dept_days_since_last_saleq50")},
-${window_functions.generateRollAvgSTDEVPartition("fea_dept_days_since_last_saleq75")},
-${window_functions.generateRollAvgSTDEVPartition("fea_dept_max_days_since_last_sale")},
 FROM joined_ctex jcte
