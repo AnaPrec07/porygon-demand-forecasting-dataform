@@ -139,7 +139,46 @@ config {
     hist_stckt.fea_dept_days_since_last_saleq50,
     hist_stckt.fea_dept_days_since_last_saleq75,
     hist_stckt.fea_dept_max_days_since_last_sale,
-    
+  
+    -- rolling sales features
+    fea_item_monthly_sales,
+    fea_item_num_days_item_is_zero_sales,
+
+    fea_sum_dept_monthly_sales,
+    fea_min_dept_monthly_sales,
+    fea_max_dept_monthly_sales,
+    fea_stddev_dept_monthly_sales,
+    fea_avg_dept_monthly_sales,
+    fea_coeff_variation_dept_monthly_sales,
+    fea_sum_dept_num_days_item_is_zero_sales,
+    fea_min_dept_num_days_item_is_zero_sales,
+    fea_max_dept_num_days_item_is_zero_sales,
+    fea_stddev_dept_num_days_item_is_zero_sales,
+    fea_avg_dept_num_days_item_is_zero_sales,
+    fea_coeffvar_dept_num_days_item_is_zero_sales,
+
+    fea_sum_cat_monthly_sales,
+    fea_min_cat_monthly_sales,
+    fea_max_cat_monthly_sales,
+    fea_stddev_cat_monthly_sales,
+    fea_avg_cat_monthly_sales,
+    fea_coeff_variation_cat_monthly_sales,
+    fea_sum_cat_num_days_item_is_zero_sales,
+    fea_min_cat_num_days_item_is_zero_sales,
+    fea_max_cat_num_days_item_is_zero_sales,
+    fea_stddev_cat_num_days_item_is_zero_sales,
+    fea_avg_cat_num_days_item_is_zero_sales,
+    fea_coeffvar_cat_num_days_item_is_zero_sales,
+
+    fea_ratio_item_dept_sum_monthly_sales,
+    fea_ratio_item_dept_min_monthly_sales,
+    fea_ratio_item_dept_max_monthly_sales,
+    fea_ratio_item_dept_avg_monthly_sales,
+    fea_ratio_item_dept_sum_num_days_item_is_zero_sales,
+    fea_ratio_item_dept_min_num_days_item_is_zero_sales,
+    fea_ratio_item_dept_max_num_days_item_is_zero_sales,
+    fea_ratio_item_dept_avg_num_days_item_is_zero_sales,
+
 FROM ${ref("target_store_item_monthly")} tgt
 
 -- join encoded features
@@ -173,6 +212,11 @@ LEFT JOIN ${ref("historical_stockout_features")} hist_stckt
     ON hist_stckt.ctx_date_month = tgt.ctx_date_month
     AND hist_stckt.ctx_item_id = tgt.ctx_item_id
     AND hist_stckt.ctx_store_id = tgt.ctx_store_id
+
+-- join rolling sales features
+LEFT JOIN ${ref("rolling_sales_features")} rolling_sales
+  ON rolling_sales.ctx_date_month = tgt.ctx_date_month
+  AND rolling_sales.ctx_item_id = tgt.ctx_item_id
 
 -- join filter_out_outliers
 LEFT JOIN ${ref("stockout_filter")} stk
