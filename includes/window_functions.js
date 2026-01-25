@@ -20,7 +20,7 @@ function generateLeadColumns(columnName, maxLead, partitionBy="ctx_item_id, ctx_
 /**
  * Alternative: Generate LAG window function
  */
-function generateLagColumns(columnName, maxLag, partitionBy="ctx_item_id, ctx_store_id", orderBy="ctx_date_month", alias = 'lag_',) {
+function generateLagColumns(columnName, maxLag, partitionBy="ctx_item_id", orderBy="ctx_date_month", alias = 'lag_',) {
   const columns = [];
   for (let i = 1; i <= maxLag; i++) {
     columns.push(
@@ -56,7 +56,7 @@ function generateRollMedianSTDEVNoPartition(columnName, windows = [3, 6, 12]) {
   return columns.join(',\n');
 }
 
-function generateRollAvgSTDEVPartition(columnName, partitionBy="ctx_item_id, ctx_store_id", orderBy="ctx_date_month", windows = [3, 6, 12]) {
+function generateRollAvgSTDEVPartition(columnName, partitionBy="ctx_item_id", orderBy="ctx_date_month", windows = [3, 6, 12]) {
   const columns = [];
   windows.forEach(i => {
     columns.push(
@@ -65,22 +65,22 @@ function generateRollAvgSTDEVPartition(columnName, partitionBy="ctx_item_id, ctx
     columns.push(
       `    STDDEV(${columnName}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy} ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_roll_std_${i}_months`
     );
+    columns.push(
+      `    MIN(${columnName}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy} ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_roll_min_${i}_months`
+    );
+    columns.push(
+      `    MAX(${columnName}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy} ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_roll_max_${i}_months`
+    );
+    columns.push(
+      `    COUNT(${columnName}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy} ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_roll_count_${i}_months`
+    );
+    columns.push(
+      `    AVG(${columnName})/STDDEV(${columnName}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy} ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_roll_coeff_variation_${i}_months`
+    );
   });
   return columns.join(',\n');
 }
 
-function generateRollMedianSTDEVPartition(columnName, partitionBy="ctx_item_id, ctx_store_id", orderBy="ctx_date_month", windows = [3, 6, 12]) {
-  const columns = [];
-  windows.forEach(i => {
-    columns.push(
-      `    APPROX_QUANTILES(${columnName}, 100)[OFFSET(50)] OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy} ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_roll_median_${i}_months`
-    );
-    columns.push(
-      `    STDDEV(${columnName}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy} ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_roll_std_${i}_months`
-    );
-  });
-  return columns.join(',\n');
-}
 
 module.exports = {
   generateLeadColumns,

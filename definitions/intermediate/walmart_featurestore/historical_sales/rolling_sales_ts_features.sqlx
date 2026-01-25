@@ -1,0 +1,34 @@
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  description: "Rolling sales features time series per multiple hierarchy levels.",
+  tags: ["intermediate", "walmart", "features", "historical_sales_ts"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+  }
+}
+WITH rolling_sales_features AS (
+  SELECT 
+    rolling.*,
+
+    -- item level timeseries:
+        -- lags: 1, 2, 3, 11, 12, 13
+        ${window_functions.generateLagColumns("fea_item_monthly_sales", maxLag=3)},
+        LAG(fea_item_monthly_sales, 11) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month) AS fea_item_monthly_sales_lag11_months,
+        -- general TS
+        ${window_functions.generateRollAvgSTDEVPartition("fea_item_monthly_sales")},
+    -- dept 
+        ${window_functions.generateRollAvgSTDEVPartition("fea_item_monthly_sales")},
+    -- cat
+        ${window_functions.generateRollAvgSTDEVPartition("fea_item_monthly_sales")},
+  FROM ${ref("rolling_sales_features")} rolling 
+)
