@@ -35,6 +35,7 @@ WITH timeseries AS (
 SELECT 
     ctx_item_id, 
     ctx_date_month,
+    fea_item_monthly_sales,
     fea_item_monthly_sales_lag_1_months,
     fea_item_monthly_sales_lag_2_months,
     fea_item_monthly_sales_lag_3_months,
