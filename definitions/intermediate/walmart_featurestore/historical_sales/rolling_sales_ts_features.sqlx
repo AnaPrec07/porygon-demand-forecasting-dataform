@@ -21,9 +21,8 @@ SELECT
   ctx_item_id, 
   ctx_date_month,
   -- item level timeseries:
-      -- lags: 1, 2, 3, 11, 12, 13
-      ${window_functions.generateLagColumns("fea_item_monthly_sales", maxLag=3)},
-      LAG(fea_item_monthly_sales, 11) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month) AS fea_item_monthly_sales_lag11_months,
+      -- lags: 12
+      ${window_functions.generateLagColumns("fea_item_monthly_sales", maxLag=12)},
       -- general TS
       ${window_functions.generateRollAvgSTDEVPartition("fea_item_monthly_sales")},
   -- dept 
@@ -31,4 +30,3 @@ SELECT
   -- cat
       ${window_functions.generateRollAvgSTDEVPartition("fea_sum_cat_monthly_sales")},
 FROM ${ref("rolling_sales_features")} rolling 
-GROUP BY ctx_item_id, ctx_date_month
