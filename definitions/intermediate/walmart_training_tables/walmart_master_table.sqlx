@@ -179,6 +179,65 @@ config {
     fea_ratio_item_dept_max_num_days_item_is_zero_sales,
     fea_ratio_item_dept_avg_num_days_item_is_zero_sales,
 
+    -- rolling features time series
+    fea_item_monthly_sales_lag_1_months,
+    fea_item_monthly_sales_lag_2_months,
+    fea_item_monthly_sales_lag_3_months,
+    fea_item_monthly_sales_lag_4_months,
+    fea_item_monthly_sales_lag_5_months,
+    fea_item_monthly_sales_lag_6_months,
+    fea_item_monthly_sales_lag_7_months,
+    fea_item_monthly_sales_lag_8_months,
+    fea_item_monthly_sales_lag_9_months,
+    fea_item_monthly_sales_lag_10_months,
+    fea_item_monthly_sales_lag_11_months,
+    fea_item_monthly_sales_lag_12_months,
+    fea_item_monthly_sales_roll_avg_3_months,
+    fea_item_monthly_sales_roll_std_3_months,
+    fea_item_monthly_sales_roll_min_3_months,
+    fea_item_monthly_sales_roll_max_3_months,
+    fea_item_monthly_sales_roll_count_3_months,
+    fea_item_monthly_sales_roll_avg_6_months,
+    fea_item_monthly_sales_roll_std_6_months,
+    fea_item_monthly_sales_roll_min_6_months,
+    fea_item_monthly_sales_roll_max_6_months,
+    fea_item_monthly_sales_roll_count_6_months,
+    fea_item_monthly_sales_roll_avg_12_months,
+    fea_item_monthly_sales_roll_std_12_months,
+    fea_item_monthly_sales_roll_min_12_months,
+    fea_item_monthly_sales_roll_max_12_months,
+    fea_item_monthly_sales_roll_count_12_months,
+    fea_sum_dept_monthly_sales_roll_avg_3_months,
+    fea_sum_dept_monthly_sales_roll_std_3_months,
+    fea_sum_dept_monthly_sales_roll_min_3_months,
+    fea_sum_dept_monthly_sales_roll_max_3_months,
+    fea_sum_dept_monthly_sales_roll_count_3_months,
+    fea_sum_dept_monthly_sales_roll_avg_6_months,
+    fea_sum_dept_monthly_sales_roll_std_6_months,
+    fea_sum_dept_monthly_sales_roll_min_6_months,
+    fea_sum_dept_monthly_sales_roll_max_6_months,
+    fea_sum_dept_monthly_sales_roll_count_6_months,
+    fea_sum_dept_monthly_sales_roll_avg_12_months,
+    fea_sum_dept_monthly_sales_roll_std_12_months,
+    fea_sum_dept_monthly_sales_roll_min_12_months,
+    fea_sum_dept_monthly_sales_roll_max_12_months,
+    fea_sum_dept_monthly_sales_roll_count_12_months,
+    fea_sum_cat_monthly_sales_roll_avg_3_months,
+    fea_sum_cat_monthly_sales_roll_std_3_months,
+    fea_sum_cat_monthly_sales_roll_min_3_months,
+    fea_sum_cat_monthly_sales_roll_max_3_months,
+    fea_sum_cat_monthly_sales_roll_count_3_months,
+    fea_sum_cat_monthly_sales_roll_avg_6_months,
+    fea_sum_cat_monthly_sales_roll_std_6_months,
+    fea_sum_cat_monthly_sales_roll_min_6_months,
+    fea_sum_cat_monthly_sales_roll_max_6_months,
+    fea_sum_cat_monthly_sales_roll_count_6_months,
+    fea_sum_cat_monthly_sales_roll_avg_12_months,
+    fea_sum_cat_monthly_sales_roll_std_12_months,
+    fea_sum_cat_monthly_sales_roll_min_12_months,
+    fea_sum_cat_monthly_sales_roll_max_12_months,
+    fea_sum_cat_monthly_sales_roll_count_12_months,
+
 FROM ${ref("target_store_item_monthly")} tgt
 
 -- join encoded features
@@ -217,6 +276,11 @@ LEFT JOIN ${ref("historical_stockout_features")} hist_stckt
 LEFT JOIN ${ref("rolling_sales_features")} rolling_sales
   ON rolling_sales.ctx_date_month = tgt.ctx_date_month
   AND rolling_sales.ctx_item_id = tgt.ctx_item_id
+
+-- join rolling timeseries sales features
+LEFT JOIN ${ref("rolling_sales_ts_features")} rolling_ts_sales
+  ON rolling_ts_sales.ctx_date_month = tgt.ctx_date_month
+  AND rolling_ts_sales.ctx_item_id = tgt.ctx_item_id
 
 -- join filter_out_outliers
 LEFT JOIN ${ref("stockout_filter")} stk
