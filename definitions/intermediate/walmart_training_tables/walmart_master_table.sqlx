@@ -237,7 +237,13 @@ config {
     fea_sum_cat_monthly_sales_roll_min_12_months,
     fea_sum_cat_monthly_sales_roll_max_12_months,
     fea_sum_cat_monthly_sales_roll_count_12_months,
-
+    fea_item_monthly_sales_ratio_lag_1_months,
+    fea_item_monthly_sales_ratio_lag_2_months,
+    fea_item_monthly_sales_ratio_lag_11_months, 
+    fea_item_monthly_sales_roll_coeffvar_3_months,
+    fea_item_monthly_sales_roll_coeffvar_6_months,
+    fea_item_monthly_sales_roll_coeffvar_12_months,
+    
 FROM ${ref("target_store_item_monthly")} tgt
 
 -- join encoded features
