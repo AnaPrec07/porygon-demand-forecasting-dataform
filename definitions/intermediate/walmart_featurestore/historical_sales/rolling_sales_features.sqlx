@@ -65,9 +65,9 @@ dept_sales AS (
     MIN(fea_item_num_days_item_is_zero_sales) AS fea_min_dept_num_days_item_is_zero_sales,
     MAX(fea_item_num_days_item_is_zero_sales) AS fea_max_dept_num_days_item_is_zero_sales,
     STDDEV(fea_item_num_days_item_is_zero_sales) AS fea_stddev_dept_num_days_item_is_zero_sales,
-    AVG(fea_item_num_days_item_is_zero_sales) AS fea_avg_dept_monthly_sales,
+    AVG(fea_item_num_days_item_is_zero_sales) AS fea_avg_dept_num_days_item_is_zero_sales,
     AVG(fea_item_num_days_item_is_zero_sales)/STDDEV(fea_item_num_days_item_is_zero_sales) AS fea_coeffvar_dept_num_days_item_is_zero_sales
-  FROM cleanned_targets
+  FROM item_sales
   GROUP BY 
     ctx_date_month,
     ctx_dept_id
@@ -88,9 +88,9 @@ cat_sales AS (
     MIN(fea_item_num_days_item_is_zero_sales) AS fea_min_cat_num_days_item_is_zero_sales,
     MAX(fea_item_num_days_item_is_zero_sales) AS fea_max_cat_num_days_item_is_zero_sales,
     STDDEV(fea_item_num_days_item_is_zero_sales) AS fea_stddev_cat_num_days_item_is_zero_sales,
-    AVG(fea_item_num_days_item_is_zero_sales) AS fea_avg_cat_monthly_sales,
+    AVG(fea_item_num_days_item_is_zero_sales) AS fea_avg_cat_num_days_item_is_zero_sales,
     AVG(fea_item_num_days_item_is_zero_sales)/STDDEV(fea_item_num_days_item_is_zero_sales) AS fea_coeffvar_cat_num_days_item_is_zero_sales
-  FROM cleanned_targets
+  FROM item_sales
   GROUP BY 
     ctx_date_month,
     ctx_cat_id
@@ -102,7 +102,7 @@ SELECT
   it.ctx_dept_id,
   it.ctx_cat_id,
   it.fea_item_monthly_sales,
-  it.fea_num_days_item_is_zero_sales,
+  it.fea_item_num_days_item_is_zero_sales,
 
   -- dept level features
   dept.fea_sum_dept_monthly_sales,
@@ -115,7 +115,7 @@ SELECT
   dept.fea_min_dept_num_days_item_is_zero_sales,
   dept.fea_max_dept_num_days_item_is_zero_sales,
   dept.fea_stddev_dept_num_days_item_is_zero_sales,
-  dept.fea_avg_dept_monthly_sales,
+  dept.fea_dept_dept_num_days_item_is_zero_sales,
   dept.fea_coeffvar_dept_num_days_item_is_zero_sales,
 
   -- cat level features
@@ -129,7 +129,7 @@ SELECT
   cat.fea_min_cat_num_days_item_is_zero_sales,
   cat.fea_max_cat_num_days_item_is_zero_sales,
   cat.fea_stddev_cat_num_days_item_is_zero_sales,
-  cat.fea_avg_cat_monthly_sales,
+  cat.fea_avg_cat_num_days_item_is_zero_sales,
   cat.fea_coeffvar_cat_num_days_item_is_zero_sales,
 
   -- Dept Ratios
