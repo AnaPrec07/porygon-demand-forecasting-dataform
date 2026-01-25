@@ -115,7 +115,7 @@ SELECT
   dept.fea_min_dept_num_days_item_is_zero_sales,
   dept.fea_max_dept_num_days_item_is_zero_sales,
   dept.fea_stddev_dept_num_days_item_is_zero_sales,
-  dept.fea_dept_dept_num_days_item_is_zero_sales,
+  dept.fea_avg_dept_num_days_item_is_zero_sales,
   dept.fea_coeffvar_dept_num_days_item_is_zero_sales,
 
   -- cat level features
@@ -133,14 +133,15 @@ SELECT
   cat.fea_coeffvar_cat_num_days_item_is_zero_sales,
 
   -- Dept Ratios
-  it.fea_item_monthly_sales/dept.fea_sum_dept_monthly_sales AS fea_ratio_item_dept_sum_monthly_sales,
-  it.fea_item_monthly_sales/dept.fea_min_dept_monthly_sales AS fea_ratio_item_dept_min_monthly_sales,
-  it.fea_item_monthly_sales/dept.fea_max_dept_monthly_sales AS fea_ratio_item_dept_max_monthly_sales,
-  it.fea_item_monthly_sales/dept.fea_avg_dept_monthly_sales fea_ratio_item_dept_avg_monthly_sales,
-  it.fea_item_num_days_item_is_zero_sales/dept.fea_sum_dept_num_days_item_is_zero_sales AS fea_ratio_item_dept_sum_num_days_item_is_zero_sales,
-  it.fea_item_num_days_item_is_zero_sales/dept.fea_min_dept_num_days_item_is_zero_sales AS fea_ratio_item_dept_min_num_days_item_is_zero_sales,
-  it.fea_item_num_days_item_is_zero_sales/dept.fea_max_dept_num_days_item_is_zero_sales AS fea_ratio_item_dept_max_num_days_item_is_zero_sales,
-  it.fea_item_num_days_item_is_zero_sales/dept.fea_avg_dept_monthly_sales  AS fea_ratio_item_dept_avg_num_days_item_is_zero_sales,
+  SAFE_DIVIDE(it.fea_item_monthly_sales, dept.fea_sum_dept_monthly_sales) AS fea_ratio_item_dept_sum_monthly_sales,
+  SAFE_DIVIDE(it.fea_item_monthly_sales, dept.fea_min_dept_monthly_sales) AS fea_ratio_item_dept_min_monthly_sales,
+  SAFE_DIVIDE(it.fea_item_monthly_sales, dept.fea_max_dept_monthly_sales) AS fea_ratio_item_dept_max_monthly_sales,
+  SAFE_DIVIDE(it.fea_item_monthly_sales, dept.fea_avg_dept_monthly_sales) fea_ratio_item_dept_avg_monthly_sales,
+  SAFE_DIVIDE(it.fea_item_num_days_item_is_zero_sales, dept.fea_sum_dept_num_days_item_is_zero_sales) AS fea_ratio_item_dept_sum_num_days_item_is_zero_sales,
+  SAFE_DIVIDE(it.fea_item_num_days_item_is_zero_sales, dept.fea_min_dept_num_days_item_is_zero_sales) AS fea_ratio_item_dept_min_num_days_item_is_zero_sales,
+  SAFE_DIVIDE(it.fea_item_num_days_item_is_zero_sales, dept.fea_max_dept_num_days_item_is_zero_sales) AS fea_ratio_item_dept_max_num_days_item_is_zero_sales,
+  SAFE_DIVIDE(it.fea_item_num_days_item_is_zero_sales, dept.fea_avg_dept_num_days_item_is_zero_sales)  AS fea_ratio_item_dept_avg_num_days_item_is_zero_sales,
+
 FROM item_sales it 
 LEFT JOIN dept_sales dept
   ON dept.ctx_date_month = it.ctx_date_month
