@@ -17,17 +17,88 @@ config {
   }
 }
 
+WITH timeseries AS (
+  SELECT 
+    ctx_item_id, 
+    ctx_date_month,
+    -- item level timeseries:
+        -- lags: 12
+        ${window_functions.generateLagColumns("fea_item_monthly_sales", maxLag=12)},
+        -- general TS
+        ${window_functions.generateRollAvgSTDEVPartition("fea_item_monthly_sales")},
+    -- dept 
+        ${window_functions.generateRollAvgSTDEVPartition("fea_sum_dept_monthly_sales")},
+    -- cat
+        ${window_functions.generateRollAvgSTDEVPartition("fea_sum_cat_monthly_sales")},
+  FROM ${ref("rolling_sales_features")} rolling 
+)
 SELECT 
-  ctx_item_id, 
-  ctx_date_month,
-  -- item level timeseries:
-      -- lags: 12
-      ${window_functions.generateLagColumns("fea_item_monthly_sales", maxLag=12)},
-      -- general TS
-      ${window_functions.generateRollAvgSTDEVPartition("fea_item_monthly_sales")},
-  -- dept 
-      ${window_functions.generateRollAvgSTDEVPartition("fea_sum_dept_monthly_sales")},
-  -- cat
-      ${window_functions.generateRollAvgSTDEVPartition("fea_sum_cat_monthly_sales")},
-FROM ${ref("rolling_sales_features")} rolling 
+    ctx_item_id, 
+    ctx_date_month,
+    fea_item_monthly_sales_lag_1_months,
+    fea_item_monthly_sales_lag_2_months,
+    fea_item_monthly_sales_lag_3_months,
+    fea_item_monthly_sales_lag_4_months,
+    fea_item_monthly_sales_lag_5_months,
+    fea_item_monthly_sales_lag_6_months,
+    fea_item_monthly_sales_lag_7_months,
+    fea_item_monthly_sales_lag_8_months,
+    fea_item_monthly_sales_lag_9_months,
+    fea_item_monthly_sales_lag_10_months,
+    fea_item_monthly_sales_lag_11_months,
+    fea_item_monthly_sales_lag_12_months,
+    fea_item_monthly_sales_roll_avg_3_months,
+    fea_item_monthly_sales_roll_std_3_months,
+    fea_item_monthly_sales_roll_min_3_months,
+    fea_item_monthly_sales_roll_max_3_months,
+    fea_item_monthly_sales_roll_count_3_months,
+    fea_item_monthly_sales_roll_avg_6_months,
+    fea_item_monthly_sales_roll_std_6_months,
+    fea_item_monthly_sales_roll_min_6_months,
+    fea_item_monthly_sales_roll_max_6_months,
+    fea_item_monthly_sales_roll_count_6_months,
+    fea_item_monthly_sales_roll_avg_12_months,
+    fea_item_monthly_sales_roll_std_12_months,
+    fea_item_monthly_sales_roll_min_12_months,
+    fea_item_monthly_sales_roll_max_12_months,
+    fea_item_monthly_sales_roll_count_12_months,
+    fea_sum_dept_monthly_sales_roll_avg_3_months,
+    fea_sum_dept_monthly_sales_roll_std_3_months,
+    fea_sum_dept_monthly_sales_roll_min_3_months,
+    fea_sum_dept_monthly_sales_roll_max_3_months,
+    fea_sum_dept_monthly_sales_roll_count_3_months,
+    fea_sum_dept_monthly_sales_roll_avg_6_months,
+    fea_sum_dept_monthly_sales_roll_std_6_months,
+    fea_sum_dept_monthly_sales_roll_min_6_months,
+    fea_sum_dept_monthly_sales_roll_max_6_months,
+    fea_sum_dept_monthly_sales_roll_count_6_months,
+    fea_sum_dept_monthly_sales_roll_avg_12_months,
+    fea_sum_dept_monthly_sales_roll_std_12_months,
+    fea_sum_dept_monthly_sales_roll_min_12_months,
+    fea_sum_dept_monthly_sales_roll_max_12_months,
+    fea_sum_dept_monthly_sales_roll_count_12_months,
+    fea_sum_cat_monthly_sales_roll_avg_3_months,
+    fea_sum_cat_monthly_sales_roll_std_3_months,
+    fea_sum_cat_monthly_sales_roll_min_3_months,
+    fea_sum_cat_monthly_sales_roll_max_3_months,
+    fea_sum_cat_monthly_sales_roll_count_3_months,
+    fea_sum_cat_monthly_sales_roll_avg_6_months,
+    fea_sum_cat_monthly_sales_roll_std_6_months,
+    fea_sum_cat_monthly_sales_roll_min_6_months,
+    fea_sum_cat_monthly_sales_roll_max_6_months,
+    fea_sum_cat_monthly_sales_roll_count_6_months,
+    fea_sum_cat_monthly_sales_roll_avg_12_months,
+    fea_sum_cat_monthly_sales_roll_std_12_months,
+    fea_sum_cat_monthly_sales_roll_min_12_months,
+    fea_sum_cat_monthly_sales_roll_max_12_months,
+    fea_sum_cat_monthly_sales_roll_count_12_months,
+
+    -- Ratios
+    SAFE_DIVIDE(fea_item_monthly_sales, fea_item_monthly_sales_lag_1_months) AS fea_item_monthly_sales_ratio_lag_1_months,
+    SAFE_DIVIDE(fea_item_monthly_sales, fea_item_monthly_sales_lag_2_months) AS fea_item_monthly_sales_ratio_lag_2_months,
+    SAFE_DIVIDE(fea_item_monthly_sales, fea_item_monthly_sales_lag_11_months) AS fea_item_monthly_sales_ratio_lag_11_months, 
+    SAFE_DIVIDE(fea_item_monthly_sales_roll_avg_3_months, fea_item_monthly_sales_roll_std_3_months) AS fea_item_monthly_sales_roll_coeffvar_3_months,
+
+    FROM timeseries
+
 
