@@ -98,6 +98,8 @@ SELECT
     SAFE_DIVIDE(fea_item_monthly_sales, fea_item_monthly_sales_lag_2_months) AS fea_item_monthly_sales_ratio_lag_2_months,
     SAFE_DIVIDE(fea_item_monthly_sales, fea_item_monthly_sales_lag_11_months) AS fea_item_monthly_sales_ratio_lag_11_months, 
     SAFE_DIVIDE(fea_item_monthly_sales_roll_avg_3_months, fea_item_monthly_sales_roll_std_3_months) AS fea_item_monthly_sales_roll_coeffvar_3_months,
+    SAFE_DIVIDE(fea_item_monthly_sales_roll_avg_6_months, fea_item_monthly_sales_roll_std_6_months) AS fea_item_monthly_sales_roll_coeffvar_6_months,
+    SAFE_DIVIDE(fea_item_monthly_sales_roll_avg_12_months, fea_item_monthly_sales_roll_std_12_months) AS fea_item_monthly_sales_roll_coeffvar_12_months,
 
     FROM timeseries
 
