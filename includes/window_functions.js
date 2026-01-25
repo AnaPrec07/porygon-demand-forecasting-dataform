@@ -74,9 +74,6 @@ function generateRollAvgSTDEVPartition(columnName, partitionBy="ctx_item_id", or
     columns.push(
       `    COUNT(${columnName}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy} ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_roll_count_${i}_months`
     );
-    columns.push(
-      `    AVG(${columnName})/STDDEV(${columnName}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy} ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_roll_coeff_variation_${i}_months`
-    );
   });
   return columns.join(',\n');
 }
