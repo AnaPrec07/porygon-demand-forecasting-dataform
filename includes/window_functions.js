@@ -88,6 +88,4 @@ module.exports = {
   generateRollAvgSTDEVNoPartition,
   generateRollAvgSTDEVPartition,
   generateRollMedianSTDEVNoPartition,
-  generateRollMedianSTDEVPartition,
-
 };
