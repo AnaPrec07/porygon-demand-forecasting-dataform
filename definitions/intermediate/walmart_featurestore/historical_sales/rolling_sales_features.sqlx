@@ -16,151 +16,135 @@ config {
     ],
   }
 }
-
-
 WITH cleanned_targets AS (
   SELECT 
     tgt.ctx_date_month,
     tgt.ctx_store_id,
     tgt.ctx_item_id,
+    tgt.ctx_cat_id,
+    tgt.ctx_dept_id,
     tgt.ctx_state_id,
     tgt.tgt_monthly_sales,
     tgt.tgt_days_is_zero_sales
-    FROM ${ref("target_store_item_monthly")} tgt 
-    LEFT JOIN ${ref("item_longevity_features")} long
+  FROM ${ref("target_store_item_monthly")} tgt 
+  LEFT JOIN ${ref("item_longevity_features")} long
     ON long.ctx_item_id = tgt.ctx_item_id
     AND long.ctx_date_month = tgt.ctx_date_month
-    WHERE tgt.ctx_date_month >= long.ctx_first_date
+  LEFT JOIN ${ref("stockout_filter")} stockout
+    ON stockout.ctx_date_month = tgt.ctx_date_month
+    AND stockout.ctx_item_id = tgt.ctx_item_id
+    AND stockout.ctx_store_id = tgt.ctx_store_id
+  WHERE long.fea_item_longevity_months >=0
     AND tgt.ctx_store_id = "CA_1"
-), item_sales AS (
-  SELECT
-  ctx_item_id,
-  ctx_store_id,
-  ctx_state_id,
-  src.ctx_date_month,
-  CASE WHEN tgt_monthly_sales = 0 THEN NULL ELSE tgt_monthly_sales END AS fea_item_monthly_sales,
-  tgt_days_is_zero_sales AS fea_num_days_item_is_zero_sales,
-  FROM cleanned_targets src
+    AND stockout.is_stockout_tgt = 0
 
-),
-item_sales_ts AS (
+), 
+item_sales AS (
   SELECT
   ctx_item_id,
-  ctx_store_id,
-  ctx_state_id,
-  ctx_date_month,
-  fea_item_monthly_sales,
-  fea_num_days_item_is_zero_sales,
-  
-  -- Window functions for item store level
-  ${window_functions.generateRollAvgSTDEVPartition("fea_item_monthly_sales")},
-  ${window_functions.generateLagColumns("fea_item_monthly_sales", 4)},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_num_days_item_is_zero_sales")},
-  ${window_functions.generateLagColumns("fea_num_days_item_is_zero_sales", 4)},
-  FROM item_sales
+  ctx_dept_id,
+  ctx_cat_id,
+  src.ctx_date_month,
+  tgt_monthly_sales END AS fea_item_monthly_sales,
+  tgt_days_is_zero_sales AS fea_item_num_days_item_is_zero_sales,
+  FROM cleanned_targets src
 ),
-item_across_state AS (
-  SELECT 
-    it.ctx_date_month,
-    it.ctx_item_id,
-    it.ctx_state_id,
-    SUM(it.fea_item_monthly_sales) AS fea_state_item_monthly_sales,
-    SUM(it.fea_num_days_item_is_zero_sales) AS fea_state_item_num_days_is_zero_sales,
-  FROM item_sales it
+dept_sales AS (
+  SELECT
+    ctx_dept_id,
+    ctx_date_month,
+    -- Sales Amount
+    SUM(fea_item_monthly_sales) AS fea_sum_dept_monthly_sales,
+    MIN(fea_item_monthly_sales) AS fea_min_dept_monthly_sales,
+    MAX(fea_item_monthly_sales) AS fea_max_dept_monthly_sales,
+    STDDEV(fea_item_monthly_sales) AS fea_stddev_dept_monthly_sales,
+    AVG(fea_item_monthly_sales) AS fea_avg_dept_monthly_sales,
+    AVG(fea_item_monthly_sales)/STDDEV(fea_item_monthly_sales) AS fea_coeff_variation_dept_monthly_sales
+    -- Sales ittermitency
+    SUM(fea_item_num_days_item_is_zero_sales) AS fea_sum_dept_num_days_item_is_zero_sales,
+    MIN(fea_item_num_days_item_is_zero_sales) AS fea_min_dept_num_days_item_is_zero_sales,
+    MAX(fea_item_num_days_item_is_zero_sales) AS fea_max_dept_num_days_item_is_zero_sales,
+    STDDEV(fea_item_num_days_item_is_zero_sales) AS fea_stddev_dept_num_days_item_is_zero_sales,
+    AVG(fea_item_num_days_item_is_zero_sales) AS fea_avg_dept_monthly_sales,
+    AVG(fea_item_num_days_item_is_zero_sales)/STDDEV(fea_item_num_days_item_is_zero_sales) AS fea_coeffvar_dept_num_days_item_is_zero_sales
+  FROM cleanned_targets
   GROUP BY 
-    it.ctx_date_month,
-    it.ctx_item_id,
-    it.ctx_state_id
+    ctx_date_month,
+    ctx_dept_id
 ),
-item_across_state_ts AS (
-  SELECT 
-    it.ctx_date_month,
-    it.ctx_item_id,
-    it.ctx_state_id,
-    fea_state_item_monthly_sales,
-    fea_state_item_num_days_is_zero_sales,
-    -- Window functions for item state level
-    ${window_functions.generateRollAvgSTDEVPartition("fea_state_item_monthly_sales", "ctx_item_id, ctx_state_id")},
-    ${window_functions.generateRollAvgSTDEVPartition("fea_state_item_num_days_is_zero_sales", "ctx_item_id, ctx_state_id")},
-  FROM item_across_state it
-),
-item_total AS (
-  SELECT 
-    it.ctx_date_month,
-    it.ctx_item_id,
-    SUM(it.fea_item_monthly_sales) AS fea_all_item_monthly_sales,
-    SUM(it.fea_num_days_item_is_zero_sales) AS fea_all_item_num_days_is_zero_sales,
-  FROM item_sales it
+cat_sales AS (
+  SELECT
+    ctx_cat_id,
+    ctx_date_month,
+    -- Sales Amount
+    SUM(fea_item_monthly_sales) AS fea_sum_cat_monthly_sales,
+    MIN(fea_item_monthly_sales) AS fea_min_cat_monthly_sales,
+    MAX(fea_item_monthly_sales) AS fea_max_cat_monthly_sales,
+    STDDEV(fea_item_monthly_sales) AS fea_stddev_cat_monthly_sales,
+    AVG(fea_item_monthly_sales) AS fea_avg_cat_monthly_sales,
+    AVG(fea_item_monthly_sales)/STDDEV(fea_item_monthly_sales) AS fea_coeff_variation_cat_monthly_sales
+    -- Sales ittermitency
+    SUM(fea_item_num_days_item_is_zero_sales) AS fea_sum_cat_num_days_item_is_zero_sales,
+    MIN(fea_item_num_days_item_is_zero_sales) AS fea_min_cat_num_days_item_is_zero_sales,
+    MAX(fea_item_num_days_item_is_zero_sales) AS fea_max_cat_num_days_item_is_zero_sales,
+    STDDEV(fea_item_num_days_item_is_zero_sales) AS fea_stddev_cat_num_days_item_is_zero_sales,
+    AVG(fea_item_num_days_item_is_zero_sales) AS fea_avg_cat_monthly_sales,
+    AVG(fea_item_num_days_item_is_zero_sales)/STDDEV(fea_item_num_days_item_is_zero_sales) AS fea_coeffvar_cat_num_days_item_is_zero_sales
+  FROM cleanned_targets
   GROUP BY 
-    it.ctx_date_month,
-    it.ctx_item_id
+    ctx_date_month,
+    ctx_cat_id
 ),
-item_total_ts AS (
-  SELECT 
-    it.ctx_date_month,
-    it.ctx_item_id,
-    fea_all_item_monthly_sales,
-    fea_all_item_num_days_is_zero_sales,
-    -- Window functions for item level
-    ${window_functions.generateRollAvgSTDEVPartition("fea_all_item_monthly_sales", "ctx_item_id")},
-    ${window_functions.generateRollAvgSTDEVPartition("fea_all_item_num_days_is_zero_sales", "ctx_item_id")},
-  FROM item_total it
-)
 SELECT 
+  -- item level features
   it.ctx_date_month,
   it.ctx_item_id,
-  it.ctx_store_id,
+  it.ctx_dept_id,
+  it.ctx_cat_id,
   it.fea_item_monthly_sales,
   it.fea_num_days_item_is_zero_sales,
-  it.fea_item_monthly_sales_roll_avg_3_months,
-  it.fea_item_monthly_sales_roll_avg_6_months,
-  it.fea_item_monthly_sales_roll_avg_12_months,
-  it.fea_item_monthly_sales_roll_std_3_months,
-  it.fea_item_monthly_sales_roll_std_6_months,
-  it.fea_item_monthly_sales_roll_std_12_months,
-  it.fea_item_monthly_sales_lag_1_months,
-  it.fea_item_monthly_sales_lag_2_months,
-  it.fea_item_monthly_sales_lag_3_months,
-  it.fea_item_monthly_sales_lag_4_months,
-  SAFE_DIVIDE(it.fea_item_monthly_sales - it.fea_item_monthly_sales_lag_1_months, it.fea_item_monthly_sales_lag_1_months) AS fea_item_monthly_sales_percent_change,
-  it.fea_num_days_item_is_zero_sales_roll_avg_3_months,
-  it.fea_num_days_item_is_zero_sales_roll_avg_6_months,
-  it.fea_num_days_item_is_zero_sales_roll_avg_12_months,
-  it.fea_num_days_item_is_zero_sales_roll_std_3_months,
-  it.fea_num_days_item_is_zero_sales_roll_std_6_months,
-  it.fea_num_days_item_is_zero_sales_roll_std_12_months,
-  it.fea_num_days_item_is_zero_sales_lag_1_months,
-  SAFE_DIVIDE(it.fea_num_days_item_is_zero_sales - it.fea_num_days_item_is_zero_sales_lag_1_months, it.fea_num_days_item_is_zero_sales_lag_1_months) AS fea_num_days_item_is_zero_percent_change,
-  it.fea_num_days_item_is_zero_sales_lag_2_months,
-  it.fea_num_days_item_is_zero_sales_lag_3_months,
-  it.fea_num_days_item_is_zero_sales_lag_4_months,
-  it_state_ts.fea_state_item_monthly_sales,
-  fea_state_item_num_days_is_zero_sales,
-  fea_state_item_monthly_sales_roll_avg_3_months,
-  fea_state_item_monthly_sales_roll_avg_6_months,
-  fea_state_item_monthly_sales_roll_avg_12_months,
-  fea_state_item_monthly_sales_roll_std_3_months,
-  fea_state_item_monthly_sales_roll_std_6_months,
-  fea_state_item_monthly_sales_roll_std_12_months,
-  fea_state_item_num_days_is_zero_sales_roll_avg_3_months,
-  fea_state_item_num_days_is_zero_sales_roll_avg_6_months,
-  fea_state_item_num_days_is_zero_sales_roll_avg_12_months,
-  fea_state_item_num_days_is_zero_sales_roll_std_3_months,
-  fea_state_item_num_days_is_zero_sales_roll_std_6_months,
-  fea_state_item_num_days_is_zero_sales_roll_std_12_months,
-  it_all.fea_all_item_monthly_sales,
-  it_all.fea_all_item_num_days_is_zero_sales,
-  fea_all_item_monthly_sales_roll_avg_3_months,
-  fea_all_item_monthly_sales_roll_avg_6_months,
-  fea_all_item_monthly_sales_roll_avg_12_months,
-  fea_all_item_monthly_sales_roll_std_3_months,
-  fea_all_item_monthly_sales_roll_std_6_months,
-  fea_all_item_monthly_sales_roll_std_12_months,
-FROM item_sales_ts it 
-LEFT JOIN item_across_state_ts it_state_ts
-ON it.ctx_date_month = it_state_ts.ctx_date_month
-AND it.ctx_item_id = it_state_ts.ctx_item_id
-AND it.ctx_state_id = it_state_ts.ctx_state_id
-LEFT JOIN item_total_ts it_all
-ON it.ctx_date_month = it_all.ctx_date_month
-AND it.ctx_item_id = it_all.ctx_item_id
+
+  -- dept level features
+  dept.fea_sum_dept_monthly_sales,
+  dept.fea_min_dept_monthly_sales,
+  dept.fea_max_dept_monthly_sales,
+  dept.fea_stddev_dept_monthly_sales,
+  dept.fea_avg_dept_monthly_sales,
+  dept.fea_coeff_variation_dept_monthly_sales
+  dept.fea_sum_dept_num_days_item_is_zero_sales,
+  dept.fea_min_dept_num_days_item_is_zero_sales,
+  dept.fea_max_dept_num_days_item_is_zero_sales,
+  dept.fea_stddev_dept_num_days_item_is_zero_sales,
+  dept.fea_avg_dept_monthly_sales,
+  dept.fea_coeffvar_dept_num_days_item_is_zero_sales
+
+  -- cat level features
+  cat.fea_sum_cat_monthly_sales,
+  cat.fea_min_cat_monthly_sales,
+  cat.fea_max_cat_monthly_sales,
+  cat.fea_stddev_cat_monthly_sales,
+  cat.fea_avg_cat_monthly_sales,
+  cat.fea_coeff_variation_cat_monthly_sales
+  cat.fea_sum_cat_num_days_item_is_zero_sales,
+  cat.fea_min_cat_num_days_item_is_zero_sales,
+  cat.fea_max_cat_num_days_item_is_zero_sales,
+  cat.fea_stddev_cat_num_days_item_is_zero_sales,
+  cat.fea_avg_cat_monthly_sales,
+  cat.fea_coeffvar_cat_num_days_item_is_zero_sales
+
+  -- Dept Ratios
+  it.fea_item_monthly_sales/dept.fea_sum_dept_monthly_sales AS fea_ratio_item_dept_sum_monthly_sales,
+  it.fea_item_monthly_sales/dept.fea_min_dept_monthly_sales AS fea_ratio_item_dept_min_monthly_sales,
+  it.fea_item_monthly_sales/dept.fea_max_dept_monthly_sales AS fea_ratio_item_dept_max_monthly_sales,
+  it.fea_item_monthly_sales/dept.fea_avg_dept_monthly_sales fea_ratio_item_dept_avg_monthly_sales,
+  it.fea_item_num_days_item_is_zero_sales/dept.fea_sum_dept_num_days_item_is_zero_sales AS fea_ratio_item_dept_sum_num_days_item_is_zero_sales
+  it.fea_item_num_days_item_is_zero_sales/dept.fea_min_dept_num_days_item_is_zero_sales AS fea_ratio_item_dept_min_num_days_item_is_zero_sales
+  it.fea_item_num_days_item_is_zero_sales/dept.fea_max_dept_num_days_item_is_zero_sales AS fea_ratio_item_dept_max_num_days_item_is_zero_sales
+  it.fea_item_num_days_item_is_zero_sales/dept.fea_avg_dept_monthly_sales  AS fea_ratio_item_dept_avg_num_days_item_is_zero_sales
+FROM item_sales it 
+LEFT JOIN dept_sales dept
+  ON dept.ctx_date_month = it.ctx_date_month
+  AND dept.ctx_dept_id = it.ctx_dept_id
+LEFT JOIN cat_sales cat
+  ON cat.ctx_date_month = it.ctx_date_month
+  AND cat.ctx_cat_id = it.ctx_cat_id
