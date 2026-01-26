@@ -40,7 +40,7 @@ WITH calendar_effect_on_sales AS (
 feature_ratios AS (
   SELECT
     ctx_item_id,
-    DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
+    DATE_TRUNC(fea.ctx_date, MONTH) AS ctx_date_month,
     -- sporting
     AVG(is_sporting_event) AS feature_avg_sales_sport_event,
     AVG(is_not_sporting_event) AS feature_avg_sales_not_sport_event,
@@ -65,7 +65,8 @@ feature_ratios AS (
   GROUP BY ctx_item_id, DATE_TRUNC(ctx_date, MONTH)
 ),
 filter_stockouts_and_initialized_items AS (
-  SELECT * 
+  SELECT 
+  fea.*
   FROM feature_ratios fea
   -- join filter stockouts
   LEFT JOIN ${ref("stockout_filter")} stk
