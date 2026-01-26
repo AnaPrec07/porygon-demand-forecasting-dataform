@@ -1,0 +1,65 @@
+-- Description: Calculates calendar event and SNAP effects on sales for CA_1 store, aggregated monthly by item.
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  description: "Calendar features.",
+  tags: ["intermediate", "walmart", "features", "calendar_sales"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_item_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_item_id",
+    ],
+  }
+}
+
+
+WITH calendar_effect_on_sales AS (
+  SELECT
+    sales.ctx_date,
+    sales.ctx_item_id,
+    CASE WHEN cal.event_type_1 = 'Sporting' OR cal.event_type_2 = 'Sporting' THEN sales.daily_sales ELSE NULL END AS is_sporting_event,
+    CASE WHEN cal.event_type_1 = 'Sporting' OR cal.event_type_2 = 'Sporting' THEN NULL ELSE sales.daily_sales END AS is_not_sporting_event,
+    CASE WHEN cal.event_type_1 = 'Cultural' OR cal.event_type_2 = 'Cultural' THEN sales.daily_sales ELSE NULL END AS is_cultural_event,
+    CASE WHEN cal.event_type_1 = 'Cultural' OR cal.event_type_2 = 'Cultural' THEN NULL ELSE sales.daily_sales END AS is_not_cultural_event,
+    CASE WHEN cal.event_type_1 = 'National' OR cal.event_type_2 = 'National' THEN sales.daily_sales ELSE NULL END AS is_national_event,
+    CASE WHEN cal.event_type_1 = 'National' OR cal.event_type_2 = 'National' THEN NULL ELSE sales.daily_sales END AS is_not_national_event,
+    CASE WHEN cal.event_type_1 = 'Religious' OR cal.event_type_2 = 'Religious' THEN sales.daily_sales ELSE NULL END AS is_religious_event,
+    CASE WHEN cal.event_type_1 = 'Religious' OR cal.event_type_2 = 'Religious' THEN NULL ELSE sales.daily_sales END AS is_not_religious_event,
+    CASE WHEN cal.snap_CA = 1 THEN sales.daily_sales ELSE NULL END AS is_snap_ca,
+    CASE WHEN cal.snap_CA = 1 THEN NULL ELSE sales.daily_sales END AS is_not_snap_ca
+  FROM
+    ${ref('daily_sales_melted')} sales
+    LEFT JOIN ${ref('calendar')} cal
+      ON sales.ctx_date = cal.date
+  WHERE sales.ctx_store_id = 'CA_1'
+)
+
+SELECT
+  ctx_item_id,
+  DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
+  -- sporting
+  AVG(is_sporting_event) AS feature_avg_sales_sport_event,
+  AVG(is_not_sporting_event) AS feature_avg_sales_not_sport_event,
+  SAFE_DIVIDE(AVG(is_sporting_event), AVG(is_not_sporting_event)) AS feature_ratio_avg_sales_sport_event,
+  -- cultural
+  AVG(is_cultural_event) AS feature_avg_sales_cultural_event,
+  AVG(is_not_cultural_event) AS feature_avg_sales_not_cultural_event,
+  SAFE_DIVIDE(AVG(is_cultural_event), AVG(is_not_cultural_event)) AS feature_ratio_avg_sales_cultural_event,
+  -- national
+  AVG(is_national_event) AS feature_avg_sales_national_event,
+  AVG(is_not_national_event) AS feature_avg_sales_not_national_event,
+  SAFE_DIVIDE(AVG(is_national_event), AVG(is_not_national_event)) AS feature_ratio_avg_sales_national_event,
+  -- religious
+  AVG(is_religious_event) AS feature_avg_sales_religious_event,
+  AVG(is_not_religious_event) AS feature_avg_sales_not_religious_event,
+  SAFE_DIVIDE(AVG(is_religious_event), AVG(is_not_religious_event)) AS feature_ratio_avg_sales_religious_event,
+  -- snap ca
+  AVG(is_snap_ca) AS feature_avg_sales_snap_ca,
+  AVG(is_not_snap_ca) AS feature_avg_sales_not_snap_ca,
+  SAFE_DIVIDE(AVG(is_snap_ca), AVG(is_not_snap_ca)) AS feature_ratio_avg_sales_snap_ca
+FROM calendar_effect_on_sales
+GROUP BY ctx_item_id, DATE_TRUNC(ctx_date, MONTH)
