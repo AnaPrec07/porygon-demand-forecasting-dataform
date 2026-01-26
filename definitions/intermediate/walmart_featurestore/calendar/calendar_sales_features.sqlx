@@ -77,7 +77,7 @@ filter_stockouts_and_initialized_items AS (
     ON long.ctx_date_month = tgt.ctx_date_month
     AND long.ctx_item_id = tgt.ctx_item_id
   WHERE is_stockout_tgt = 0
-  AND new items >=0
+  AND fea_item_longevity_months >=0
 )
 SELECT 
 
