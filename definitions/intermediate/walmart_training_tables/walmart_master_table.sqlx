@@ -63,7 +63,7 @@ config {
     cal_sales.feature_ratio_avg_sales_religious_event,
     cal_sales.feature_avg_sales_snap_ca,
     cal_sales.feature_avg_sales_not_snap_ca,
-    cal_sales.feature_ratio_avg_sales_snap_ca
+    cal_sales.feature_ratio_avg_sales_snap_ca,
 
     -- longevity features
     long.fea_item_longevity_months,
