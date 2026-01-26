@@ -22,8 +22,8 @@ WITH calendar_effect_on_sales AS (
     CASE WHEN cal.snap_CA = 1 THEN sales.daily_sales ELSE NULL END AS is_snap_ca,
     CASE WHEN cal.snap_CA = 1 THEN NULL ELSE sales.daily_sales END AS is_not_snap_ca
   FROM
-    ${ref('walmart_targets_and_filters/daily_sales_melted')} sales
-    LEFT JOIN ${ref('walmart_raw/calendar')} cal
+    ${ref('daily_sales_melted')} sales
+    LEFT JOIN ${ref('calendar')} cal
       ON sales.ctx_date = cal.date
   WHERE sales.ctx_store_id = 'CA_1'
 )
