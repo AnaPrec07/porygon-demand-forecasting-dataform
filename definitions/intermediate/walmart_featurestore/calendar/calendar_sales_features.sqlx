@@ -36,30 +36,71 @@ WITH calendar_effect_on_sales AS (
     LEFT JOIN ${ref('calendar')} cal
       ON sales.ctx_date = cal.date
   WHERE sales.ctx_store_id = 'CA_1'
+),
+feature_ratios AS (
+  SELECT
+    ctx_item_id,
+    DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
+    -- sporting
+    AVG(is_sporting_event) AS feature_avg_sales_sport_event,
+    AVG(is_not_sporting_event) AS feature_avg_sales_not_sport_event,
+    SAFE_DIVIDE(AVG(is_sporting_event), AVG(is_not_sporting_event)) AS feature_ratio_avg_sales_sport_event,
+    -- cultural
+    AVG(is_cultural_event) AS feature_avg_sales_cultural_event,
+    AVG(is_not_cultural_event) AS feature_avg_sales_not_cultural_event,
+    SAFE_DIVIDE(AVG(is_cultural_event), AVG(is_not_cultural_event)) AS feature_ratio_avg_sales_cultural_event,
+    -- national
+    AVG(is_national_event) AS feature_avg_sales_national_event,
+    AVG(is_not_national_event) AS feature_avg_sales_not_national_event,
+    SAFE_DIVIDE(AVG(is_national_event), AVG(is_not_national_event)) AS feature_ratio_avg_sales_national_event,
+    -- religious
+    AVG(is_religious_event) AS feature_avg_sales_religious_event,
+    AVG(is_not_religious_event) AS feature_avg_sales_not_religious_event,
+    SAFE_DIVIDE(AVG(is_religious_event), AVG(is_not_religious_event)) AS feature_ratio_avg_sales_religious_event,
+    -- snap ca
+    AVG(is_snap_ca) AS feature_avg_sales_snap_ca,
+    AVG(is_not_snap_ca) AS feature_avg_sales_not_snap_ca,
+    SAFE_DIVIDE(AVG(is_snap_ca), AVG(is_not_snap_ca)) AS feature_ratio_avg_sales_snap_ca
+  FROM calendar_effect_on_sales
+  GROUP BY ctx_item_id, DATE_TRUNC(ctx_date, MONTH)
+),
+filter_stockouts_and_initialized_items AS (
+  SELECT * 
+  FROM feature_ratios fea
+  -- join filter stockouts
+  LEFT JOIN ${ref("stockout_filter")} stk
+      ON stk.ctx_date_month = tgt.ctx_date_month
+      AND stk.ctx_item_id = tgt.ctx_item_id
+      AND stk.ctx_store_id = tgt.ctx_store_id
+  -- join longevity feature
+  LEFT JOIN ${ref("item_longevity_features")} long
+    ON long.ctx_date_month = tgt.ctx_date_month
+    AND long.ctx_item_id = tgt.ctx_item_id
+  WHERE is_stockout_tgt = 0
+  AND new items >=0
 )
+SELECT 
 
-SELECT
+  ctx_date_month,
   ctx_item_id,
-  DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
-  -- sporting
-  AVG(is_sporting_event) AS feature_avg_sales_sport_event,
-  AVG(is_not_sporting_event) AS feature_avg_sales_not_sport_event,
-  SAFE_DIVIDE(AVG(is_sporting_event), AVG(is_not_sporting_event)) AS feature_ratio_avg_sales_sport_event,
-  -- cultural
-  AVG(is_cultural_event) AS feature_avg_sales_cultural_event,
-  AVG(is_not_cultural_event) AS feature_avg_sales_not_cultural_event,
-  SAFE_DIVIDE(AVG(is_cultural_event), AVG(is_not_cultural_event)) AS feature_ratio_avg_sales_cultural_event,
-  -- national
-  AVG(is_national_event) AS feature_avg_sales_national_event,
-  AVG(is_not_national_event) AS feature_avg_sales_not_national_event,
-  SAFE_DIVIDE(AVG(is_national_event), AVG(is_not_national_event)) AS feature_ratio_avg_sales_national_event,
-  -- religious
-  AVG(is_religious_event) AS feature_avg_sales_religious_event,
-  AVG(is_not_religious_event) AS feature_avg_sales_not_religious_event,
-  SAFE_DIVIDE(AVG(is_religious_event), AVG(is_not_religious_event)) AS feature_ratio_avg_sales_religious_event,
-  -- snap ca
-  AVG(is_snap_ca) AS feature_avg_sales_snap_ca,
-  AVG(is_not_snap_ca) AS feature_avg_sales_not_snap_ca,
-  SAFE_DIVIDE(AVG(is_snap_ca), AVG(is_not_snap_ca)) AS feature_ratio_avg_sales_snap_ca
-FROM calendar_effect_on_sales
-GROUP BY ctx_item_id, DATE_TRUNC(ctx_date, MONTH)
+  feature_avg_sales_sport_event,
+  feature_avg_sales_not_sport_event,
+  feature_ratio_avg_sales_sport_event,
+  ${window_functions.generateRollAvgSTDEVPartition("feature_ratio_avg_sales_sport_event")},
+  feature_avg_sales_cultural_event,
+  feature_avg_sales_not_cultural_event,
+  feature_ratio_avg_sales_cultural_event,
+  ${window_functions.generateRollAvgSTDEVPartition("feature_ratio_avg_sales_cultural_event")},
+  feature_avg_sales_national_event,
+  feature_avg_sales_not_national_event,
+  feature_ratio_avg_sales_national_event,
+  ${window_functions.generateRollAvgSTDEVPartition("feature_ratio_avg_sales_national_event")},
+  feature_avg_sales_religious_event,
+  feature_avg_sales_not_religious_event,
+  feature_ratio_avg_sales_religious_event,
+  ${window_functions.generateRollAvgSTDEVPartition("feature_ratio_avg_sales_religious_event")},
+  feature_avg_sales_snap_ca,
+  feature_avg_sales_not_snap_ca,
+  feature_ratio_avg_sales_snap_ca,
+  ${window_functions.generateRollAvgSTDEVPartition("feature_ratio_avg_sales_snap_ca")},
+FROM filter_stockouts_and_initialized_items fea
