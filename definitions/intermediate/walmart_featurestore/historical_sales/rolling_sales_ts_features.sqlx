@@ -24,7 +24,7 @@ WITH timeseries AS (
     fea_item_monthly_sales,
     -- item level timeseries:
         -- lags: 12
-        ${window_functions.generateLagColumns("fea_item_monthly_sales", maxLag=12)},
+        ${window_functions.generateLagColumns("fea_item_monthly_sales", 12)},
         -- general TS
         ${window_functions.generateRollAvgSTDEVPartition("fea_item_monthly_sales")},
     -- dept 
