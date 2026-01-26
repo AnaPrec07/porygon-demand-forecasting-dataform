@@ -48,6 +48,99 @@ config {
     cal.fea_is_cultural_event_3m,
     cal.fea_is_national_event_3m,
 
+    -- calendar sales features
+    cal_sales.feature_avg_sales_sport_event,
+    cal_sales.feature_avg_sales_not_sport_event,
+    cal_sales.feature_ratio_avg_sales_sport_event,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_avg_3_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_std_3_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_min_3_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_max_3_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_count_3_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_avg_6_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_std_6_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_min_6_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_max_6_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_count_6_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_avg_12_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_std_12_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_min_12_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_max_12_months,
+    cal_sales.feature_ratio_avg_sales_sport_event_roll_count_12_months,
+    cal_sales.feature_avg_sales_cultural_event,
+    cal_sales.feature_avg_sales_not_cultural_event,
+    cal_sales.feature_ratio_avg_sales_cultural_event,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_avg_3_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_std_3_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_min_3_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_max_3_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_count_3_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_avg_6_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_std_6_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_min_6_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_max_6_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_count_6_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_avg_12_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_std_12_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_min_12_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_max_12_months,
+    cal_sales.feature_ratio_avg_sales_cultural_event_roll_count_12_months,
+    cal_sales.feature_avg_sales_national_event,
+    cal_sales.feature_avg_sales_not_national_event,
+    cal_sales.feature_ratio_avg_sales_national_event,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_avg_3_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_std_3_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_min_3_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_max_3_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_count_3_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_avg_6_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_std_6_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_min_6_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_max_6_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_count_6_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_avg_12_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_std_12_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_min_12_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_max_12_months,
+    cal_sales.feature_ratio_avg_sales_national_event_roll_count_12_months,
+    cal_sales.feature_avg_sales_religious_event,
+    cal_sales.feature_avg_sales_not_religious_event,
+    cal_sales.feature_ratio_avg_sales_religious_event,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_avg_3_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_std_3_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_min_3_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_max_3_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_count_3_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_avg_6_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_std_6_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_min_6_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_max_6_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_count_6_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_avg_12_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_std_12_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_min_12_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_max_12_months,
+    cal_sales.feature_ratio_avg_sales_religious_event_roll_count_12_months,
+    cal_sales.feature_avg_sales_snap_ca,
+    cal_sales.feature_avg_sales_not_snap_ca,
+    cal_sales.feature_ratio_avg_sales_snap_ca,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_avg_3_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_std_3_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_min_3_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_max_3_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_count_3_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_avg_6_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_std_6_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_min_6_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_max_6_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_count_6_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_avg_12_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_std_12_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_min_12_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_max_12_months,
+    cal_sales.feature_ratio_avg_sales_snap_ca_roll_count_12_months,
+
+
     -- longevity features
     long.fea_item_longevity_months,
 
@@ -179,6 +272,71 @@ config {
     fea_ratio_item_dept_max_num_days_item_is_zero_sales,
     fea_ratio_item_dept_avg_num_days_item_is_zero_sales,
 
+    -- rolling features time series
+    fea_item_monthly_sales_lag_1_months,
+    fea_item_monthly_sales_lag_2_months,
+    fea_item_monthly_sales_lag_3_months,
+    fea_item_monthly_sales_lag_4_months,
+    fea_item_monthly_sales_lag_5_months,
+    fea_item_monthly_sales_lag_6_months,
+    fea_item_monthly_sales_lag_7_months,
+    fea_item_monthly_sales_lag_8_months,
+    fea_item_monthly_sales_lag_9_months,
+    fea_item_monthly_sales_lag_10_months,
+    fea_item_monthly_sales_lag_11_months,
+    fea_item_monthly_sales_lag_12_months,
+    fea_item_monthly_sales_roll_avg_3_months,
+    fea_item_monthly_sales_roll_std_3_months,
+    fea_item_monthly_sales_roll_min_3_months,
+    fea_item_monthly_sales_roll_max_3_months,
+    fea_item_monthly_sales_roll_count_3_months,
+    fea_item_monthly_sales_roll_avg_6_months,
+    fea_item_monthly_sales_roll_std_6_months,
+    fea_item_monthly_sales_roll_min_6_months,
+    fea_item_monthly_sales_roll_max_6_months,
+    fea_item_monthly_sales_roll_count_6_months,
+    fea_item_monthly_sales_roll_avg_12_months,
+    fea_item_monthly_sales_roll_std_12_months,
+    fea_item_monthly_sales_roll_min_12_months,
+    fea_item_monthly_sales_roll_max_12_months,
+    fea_item_monthly_sales_roll_count_12_months,
+    fea_sum_dept_monthly_sales_roll_avg_3_months,
+    fea_sum_dept_monthly_sales_roll_std_3_months,
+    fea_sum_dept_monthly_sales_roll_min_3_months,
+    fea_sum_dept_monthly_sales_roll_max_3_months,
+    fea_sum_dept_monthly_sales_roll_count_3_months,
+    fea_sum_dept_monthly_sales_roll_avg_6_months,
+    fea_sum_dept_monthly_sales_roll_std_6_months,
+    fea_sum_dept_monthly_sales_roll_min_6_months,
+    fea_sum_dept_monthly_sales_roll_max_6_months,
+    fea_sum_dept_monthly_sales_roll_count_6_months,
+    fea_sum_dept_monthly_sales_roll_avg_12_months,
+    fea_sum_dept_monthly_sales_roll_std_12_months,
+    fea_sum_dept_monthly_sales_roll_min_12_months,
+    fea_sum_dept_monthly_sales_roll_max_12_months,
+    fea_sum_dept_monthly_sales_roll_count_12_months,
+    fea_sum_cat_monthly_sales_roll_avg_3_months,
+    fea_sum_cat_monthly_sales_roll_std_3_months,
+    fea_sum_cat_monthly_sales_roll_min_3_months,
+    fea_sum_cat_monthly_sales_roll_max_3_months,
+    fea_sum_cat_monthly_sales_roll_count_3_months,
+    fea_sum_cat_monthly_sales_roll_avg_6_months,
+    fea_sum_cat_monthly_sales_roll_std_6_months,
+    fea_sum_cat_monthly_sales_roll_min_6_months,
+    fea_sum_cat_monthly_sales_roll_max_6_months,
+    fea_sum_cat_monthly_sales_roll_count_6_months,
+    fea_sum_cat_monthly_sales_roll_avg_12_months,
+    fea_sum_cat_monthly_sales_roll_std_12_months,
+    fea_sum_cat_monthly_sales_roll_min_12_months,
+    fea_sum_cat_monthly_sales_roll_max_12_months,
+    fea_sum_cat_monthly_sales_roll_count_12_months,
+    fea_item_monthly_sales_ratio_lag_1_months,
+    fea_item_monthly_sales_ratio_lag_2_months,
+    fea_item_monthly_sales_ratio_lag_11_months, 
+    fea_item_monthly_sales_roll_coeffvar_3_months,
+    fea_item_monthly_sales_roll_coeffvar_6_months,
+    fea_item_monthly_sales_roll_coeffvar_12_months,
+    
 FROM ${ref("target_store_item_monthly")} tgt
 
 -- join encoded features
@@ -190,6 +348,12 @@ LEFT JOIN ${ref("encoded_features")} enc
 -- join calendar features
 LEFT JOIN ${ref("calendar_features")} cal
     ON cal.ctx_date_month = tgt.ctx_date_month
+
+-- join calendar sales features
+LEFT JOIN ${ref("calendar_sales_features")} cal_sales
+    ON cal_sales.ctx_date_month = tgt.ctx_date_month
+    AND cal_sales.ctx_item_id = tgt.ctx_item_id
+
 
 -- join longevity feature
 LEFT JOIN ${ref("item_longevity_features")} long
@@ -218,7 +382,12 @@ LEFT JOIN ${ref("rolling_sales_features")} rolling_sales
   ON rolling_sales.ctx_date_month = tgt.ctx_date_month
   AND rolling_sales.ctx_item_id = tgt.ctx_item_id
 
--- join filter_out_outliers
+-- join rolling timeseries sales features
+LEFT JOIN ${ref("rolling_sales_ts_features")} rolling_ts_sales
+  ON rolling_ts_sales.ctx_date_month = tgt.ctx_date_month
+  AND rolling_ts_sales.ctx_item_id = tgt.ctx_item_id
+
+-- join filter stockouts
 LEFT JOIN ${ref("stockout_filter")} stk
     ON stk.ctx_date_month = tgt.ctx_date_month
     AND stk.ctx_item_id = tgt.ctx_item_id
