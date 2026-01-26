@@ -48,6 +48,23 @@ config {
     cal.fea_is_cultural_event_3m,
     cal.fea_is_national_event_3m,
 
+    -- calendar sales features
+    cal_sales.feature_avg_sales_sport_event,
+    cal_sales.feature_avg_sales_not_sport_event,
+    cal_sales.feature_ratio_avg_sales_sport_event,
+    cal_sales.feature_avg_sales_cultural_event,
+    cal_sales.feature_avg_sales_not_cultural_event,
+    cal_sales.feature_ratio_avg_sales_cultural_event,
+    cal_sales.feature_avg_sales_national_event,
+    cal_sales.feature_avg_sales_not_national_event,
+    cal_sales.feature_ratio_avg_sales_national_event,
+    cal_sales.feature_avg_sales_religious_event,
+    cal_sales.feature_avg_sales_not_religious_event,
+    cal_sales.feature_ratio_avg_sales_religious_event,
+    cal_sales.feature_avg_sales_snap_ca,
+    cal_sales.feature_avg_sales_not_snap_ca,
+    cal_sales.feature_ratio_avg_sales_snap_ca
+
     -- longevity features
     long.fea_item_longevity_months,
 
@@ -255,6 +272,12 @@ LEFT JOIN ${ref("encoded_features")} enc
 -- join calendar features
 LEFT JOIN ${ref("calendar_features")} cal
     ON cal.ctx_date_month = tgt.ctx_date_month
+
+-- join calendar sales features
+LEFT JOIN ${ref("calendar_sales_features")} cal_sales
+    ON cal_sales.ctx_date_month = tgt.ctx_date_month
+    AND cal_sales.ctx_item_id = tgt.ctx_item_id
+
 
 -- join longevity feature
 LEFT JOIN ${ref("item_longevity_features")} long
