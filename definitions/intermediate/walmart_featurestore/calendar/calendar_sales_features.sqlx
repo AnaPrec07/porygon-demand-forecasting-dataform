@@ -69,13 +69,13 @@ filter_stockouts_and_initialized_items AS (
   FROM feature_ratios fea
   -- join filter stockouts
   LEFT JOIN ${ref("stockout_filter")} stk
-      ON stk.ctx_date_month = tgt.ctx_date_month
-      AND stk.ctx_item_id = tgt.ctx_item_id
-      AND stk.ctx_store_id = tgt.ctx_store_id
+      ON stk.ctx_date_month = fea.ctx_date_month
+      AND stk.ctx_item_id = fea.ctx_item_id
+      AND stk.ctx_store_id = fea.ctx_store_id
   -- join longevity feature
   LEFT JOIN ${ref("item_longevity_features")} long
-    ON long.ctx_date_month = tgt.ctx_date_month
-    AND long.ctx_item_id = tgt.ctx_item_id
+    ON long.ctx_date_month = fea.ctx_date_month
+    AND long.ctx_item_id = fea.ctx_item_id
   WHERE is_stockout_tgt = 0
   AND fea_item_longevity_months >=0
 )
