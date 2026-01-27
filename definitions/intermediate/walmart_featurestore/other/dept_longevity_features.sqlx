@@ -1,0 +1,43 @@
+config {
+    type: "table",
+    schema: "walmart_featurestore",
+    name: "dept_longevity_features",
+    description: "Item longevity features for CA_1 store.",
+    tags: ["intermediate", "walmart", "features", "other_features"],
+    assertions: {
+        nonNull: [
+        "ctx_date_month",
+        "ctx_item_id",
+        ],
+        uniqueKey: [
+        "ctx_date_month",
+        "ctx_item_id",
+        ],
+    }
+}
+
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  description: "Department-level item longevity statistics per month.",
+  tags: ["intermediate", "walmart", "features", "longevity", "department"]
+}
+
+SELECT
+  ctx_date_month,
+  CONCAT(
+    SPLIT(ctx_item_id, '_')[OFFSET(0)], '_', SPLIT(ctx_item_id, '_')[OFFSET(1)]
+  ) AS ctx_dept_id,
+  MIN(fea_item_longevity_months) AS fea_dept_min_longevity_months,
+  MAX(fea_item_longevity_months) AS fea_dept_max_longevity_months,
+  AVG(fea_item_longevity_months) AS fea_dept_avg_longevity_months,
+  STDDEV(fea_item_longevity_months) AS fea_dept_std_longevity_months
+FROM
+  ${ref("item_longevity_features")}
+WHERE
+  fea_item_longevity_months >= 0
+GROUP BY
+  ctx_date_month,
+  CONCAT(
+    SPLIT(ctx_item_id, '_')[OFFSET(0)], '_', SPLIT(ctx_item_id, '_')[OFFSET(1)]
+  )
