@@ -247,7 +247,7 @@ config {
     for_wea.feature_forecast_max_tornado_funnel_cloud_3m,
     for_wea.feature_forecast_max_thunder_3m,
     for_wea.feature_forecast_max_snow_ice_pellets_3m,
-    for_wea.feature_forecast_max_rain_drizzle_3m
+    for_wea.feature_forecast_max_rain_drizzle_3m,
   
     -- historical stockout features
     hist_stckt.fea_item_min_daily_sales,
