@@ -411,8 +411,8 @@ LEFT JOIN ${ref("weather_features")} wea
 
 -- join weather forecast features
 LEFT JOIN ${ref("forecast_weather_features")} for_wea
-    ON wea.ctx_date_month = tgt.ctx_date_month
-    AND wea.ctx_state_id = tgt.ctx_state_id
+    ON for_wea.ctx_date_month = tgt.ctx_date_month
+    AND for_wea.ctx_state_id = tgt.ctx_state_id
 
 -- join historical stockout features
 LEFT JOIN ${ref("historical_stockout_features")} hist_stckt
