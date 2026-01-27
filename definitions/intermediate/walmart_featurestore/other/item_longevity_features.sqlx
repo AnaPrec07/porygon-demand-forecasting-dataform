@@ -29,7 +29,10 @@ SELECT
     itm.ctx_item_id, 
     itm.ctx_date_month,
     first_date AS ctx_first_date,
-    DATE_DIFF(itm.ctx_date_month, first_date, MONTH) AS fea_item_longevity_months,
+    CASE WHEN DATE_DIFF(itm.ctx_date_month, first_date, MONTH) >= 12 
+    THEN 12
+    ELSE DATE_DIFF(itm.ctx_date_month, first_date, MONTH)
+    END AS fea_item_longevity_months
 FROM ${ref("target_store_item_monthly")} itm
 LEFT JOIN item_dates_nonzero_sales nonz
     ON itm.ctx_item_id = nonz.ctx_item_id

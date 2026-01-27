@@ -16,7 +16,7 @@ SELECT
     SUM(tgt.tgt_monthly_sales * price.fea_item_price_avg * 0.9) AS gross_profit
 
 FROM ${ref("target_store_item_monthly")} tgt
-LEFT JOIN ${ref("price_features_ts")} price
+LEFT JOIN ${ref("price_features")} price
   ON tgt.ctx_item_id = price.ctx_item_id
   AND tgt.ctx_store_id = price.ctx_store_id
   AND tgt.ctx_date_month = price.ctx_date_month
