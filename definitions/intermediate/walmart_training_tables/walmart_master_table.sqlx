@@ -210,6 +210,44 @@ config {
     wea.fea_std_thunder,
     wea.fea_std_snow_ice_pellets,
     wea.fea_std_rain_drizzle,
+
+    -- forecast weather features
+    for_wea.feature_forecast_avg_temperature_3m,
+    for_wea.feature_forecast_avg_dewp_3m,
+    for_wea.feature_forecast_avg_visib_3m,
+    for_wea.feature_forecast_avg_wdsp_3m,
+    for_wea.feature_forecast_avg_prcp_3m,
+    for_wea.feature_forecast_avg_sndp_3m,
+    for_wea.feature_forecast_avg_gust_3m,
+    for_wea.feature_forecast_avg_fog_3m,
+    for_wea.feature_forecast_avg_tornado_funnel_cloud_3m,
+    for_wea.feature_forecast_avg_thunder_3m,
+    for_wea.feature_forecast_avg_snow_ice_pellets_3m,
+    for_wea.feature_forecast_avg_rain_drizzle_3m,
+    for_wea.feature_forecast_min_temperature_3m,
+    for_wea.feature_forecast_min_dewp_3m,
+    for_wea.feature_forecast_min_visib_3m,
+    for_wea.feature_forecast_min_wdsp_3m,
+    for_wea.feature_forecast_min_prcp_3m,
+    for_wea.feature_forecast_min_sndp_3m,
+    for_wea.feature_forecast_min_gust_3m,
+    for_wea.feature_forecast_min_fog_3m,
+    for_wea.feature_forecast_min_tornado_funnel_cloud_3m,
+    for_wea.feature_forecast_min_thunder_3m,
+    for_wea.feature_forecast_min_snow_ice_pellets_3m,
+    for_wea.feature_forecast_min_rain_drizzle_3m,
+    for_wea.feature_forecast_max_temperature_3m,
+    for_wea.feature_forecast_max_dewp_3m,
+    for_wea.feature_forecast_max_visib_3m,
+    for_wea.feature_forecast_max_wdsp_3m,
+    for_wea.feature_forecast_max_prcp_3m,
+    for_wea.feature_forecast_max_sndp_3m,
+    for_wea.feature_forecast_max_gust_3m,
+    for_wea.feature_forecast_max_fog_3m,
+    for_wea.feature_forecast_max_tornado_funnel_cloud_3m,
+    for_wea.feature_forecast_max_thunder_3m,
+    for_wea.feature_forecast_max_snow_ice_pellets_3m,
+    for_wea.feature_forecast_max_rain_drizzle_3m
   
     -- historical stockout features
     hist_stckt.fea_item_min_daily_sales,
@@ -368,6 +406,11 @@ LEFT JOIN ${ref("price_features_ts")} price
 
 -- join weather features
 LEFT JOIN ${ref("weather_features")} wea
+    ON wea.ctx_date_month = tgt.ctx_date_month
+    AND wea.ctx_state_id = tgt.ctx_state_id
+
+-- join weather forecast features
+LEFT JOIN ${ref("forecast_weather_features")} for_wea
     ON wea.ctx_date_month = tgt.ctx_date_month
     AND wea.ctx_state_id = tgt.ctx_state_id
 
