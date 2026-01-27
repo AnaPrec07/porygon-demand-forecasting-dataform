@@ -412,7 +412,7 @@ LEFT JOIN ${ref("dept_longevity_features")} dept_long
   AND dept_long.ctx_dept_id = tgt.ctx_dept_id
 
 -- join price features
-LEFT JOIN ${ref("price_features_ts")} price
+LEFT JOIN ${ref("price_features")} price
     ON price.ctx_date_month = tgt.ctx_date_month
     AND price.ctx_item_id = tgt.ctx_item_id
     AND price.ctx_store_id = tgt.ctx_store_id
