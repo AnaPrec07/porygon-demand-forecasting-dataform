@@ -141,8 +141,16 @@ config {
     cal_sales.feature_ratio_avg_sales_snap_ca_roll_count_12_months,
 
 
-    -- longevity features
+    -- item longevity features
     long.fea_item_longevity_months,
+
+    -- dept longevity features
+    fea_dept_min_longevity_months,
+    fea_dept_max_longevity_months,
+    fea_dept_avg_longevity_months,
+    fea_dept_std_longevity_months,
+    fea_dept_count_new_items,
+    fea_dept_ration_new_items,
 
     -- price features
     price.fea_item_store_price_avg,
@@ -393,10 +401,15 @@ LEFT JOIN ${ref("calendar_sales_features")} cal_sales
     AND cal_sales.ctx_item_id = tgt.ctx_item_id
 
 
--- join longevity feature
+-- join item longevity feature
 LEFT JOIN ${ref("item_longevity_features")} long
   ON long.ctx_date_month = tgt.ctx_date_month
   AND long.ctx_item_id = tgt.ctx_item_id
+
+-- join dept longevity feature
+LEFT JOIN ${ref("dept_longevity_features")} dept_long
+  ON dept_long.ctx_date_month = tgt.ctx_date_month
+  AND dept_long.ctx_dept_id = tgt.ctx_dept_id
 
 -- join price features
 LEFT JOIN ${ref("price_features_ts")} price
