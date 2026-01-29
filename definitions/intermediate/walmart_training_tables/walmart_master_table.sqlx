@@ -34,6 +34,10 @@ config {
     -- stockout filters
     stk.is_stockout,
     stk.is_stockout_tgt,
+    stk.is_stockout_lag_1,
+    stk.is_stockout_lag_2,
+    stk.is_stockout_lag_3,
+    stk.is_stockout_prev_3_m,
 
     -- encoded features
     enc.fea_is_foods,
