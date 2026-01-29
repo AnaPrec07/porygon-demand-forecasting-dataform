@@ -7,8 +7,8 @@ config {
 WITH table_keys AS (
     SELECT 
     DISTINCT 
-        ctx_item_id,
-        ctx_date_month
+        tgt.ctx_item_id,
+        tgt.ctx_date_month
 
     FROM ${ref("target_store_item_monthly")} tgt
 
