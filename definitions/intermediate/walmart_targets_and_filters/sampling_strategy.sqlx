@@ -24,7 +24,7 @@ WITH table_keys AS (
     AND long.ctx_item_id = tgt.ctx_item_id
 
     -- apply filters
-    WHERE ctx_store_id = "CA_1"
+    WHERE tgt.ctx_store_id = "CA_1"
         AND stk.is_stockout_tgt = 0
         AND long.fea_item_longevity_months >=3
         AND stk.is_stockout_prev_3_m = 0
