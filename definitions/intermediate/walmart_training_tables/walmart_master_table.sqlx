@@ -27,6 +27,9 @@ config {
     tgt.ctx_state_id,
     tgt.ctx_store_id,
 
+    -- sampling filter
+    sam.ctx_random_sampling_rank,
+
     -- target fields
     tgt.tgt_monthly_sales * 3 AS tgt_benchmark,
     tgt.tgt_monthly_sales_sum_3_next_months,
@@ -655,6 +658,11 @@ LEFT JOIN ${ref("stockout_filter")} stk
     ON stk.ctx_date_month = tgt.ctx_date_month
     AND stk.ctx_item_id = tgt.ctx_item_id
     AND stk.ctx_store_id = tgt.ctx_store_id
+
+-- join filter sample
+LEFT JOIN ${ref("sampling_strategy")} sam
+    ON sam.ctx_date_month = tgt.ctx_date_month
+    AND sam.ctx_item_id = tgt.ctx_item_id
 
 -- filter for store in scope
 WHERE tgt.ctx_store_id = "CA_1"
