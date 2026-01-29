@@ -79,6 +79,9 @@ SELECT
   is_stockout_lead_1,
   is_stockout_lead_2,
   is_stockout_lead_3,
+  is_stockout_lag_1,
+  is_stockout_lag_2,
+  is_stockout_lag_3,
   GREATEST(is_stockout, is_stockout_lead_1,is_stockout_lead_2,is_stockout_lead_3) AS is_stockout_tgt,
   GREATEST(is_stockout_lag_1,is_stockout_lag_2,is_stockout_lag_3) AS is_stockout_prev_3_m
 FROM lead_stockouts
