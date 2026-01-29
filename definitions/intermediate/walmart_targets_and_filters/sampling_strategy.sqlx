@@ -5,6 +5,7 @@ config {
 }
 
 WITH table_keys AS (
+    SELECT 
     DISTINCT 
         ctx_item_id,
         ctx_date_month
