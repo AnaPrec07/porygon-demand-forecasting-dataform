@@ -79,5 +79,9 @@ SELECT
     ORDER BY ctx_date_month 
     ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
   ) AS fea_is_national_event_3m,
+  SUM(fea_is_religious_event) OVER (
+    ORDER BY ctx_date_month 
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
+  ) AS fea_is_religious_event_3m,
   FROM events_at_monthly_level
 
