@@ -36,7 +36,7 @@ WITH cleanned_targets AS (
     AND stockout.ctx_store_id = tgt.ctx_store_id
   WHERE long.fea_item_longevity_months >=0
     AND tgt.ctx_store_id = "CA_1"
-    AND stockout.is_stockout_tgt = 0
+    AND stockout.is_stockout = 0
     AND tgt.ctx_date_month >"2011-01-01"
 
 ), 
