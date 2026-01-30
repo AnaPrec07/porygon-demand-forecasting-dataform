@@ -607,7 +607,7 @@ config {
     fea_item_monthly_sales_roll_coeffvar_12_months,
 
     -- calculate price elasticity features
-    SAFE_DIVID(fea_item_monthly_sales_ratio_lag_1_months, fea_price_abs_change_1m) AS fea_item_price_elasticity_1m,
+    SAFE_DIVIDE(fea_item_monthly_sales_ratio_lag_1_months, fea_price_abs_change_1m) AS fea_item_price_elasticity_1m,
  
 FROM ${ref("target_store_item_monthly")} tgt
 
