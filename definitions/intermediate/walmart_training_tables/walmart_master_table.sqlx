@@ -490,9 +490,9 @@ config {
     hist_stckt.fea_ratio_item_dept_daily_salesq25,
     hist_stckt.fea_ratio_item_dept_daily_salesq50,
     hist_stckt.fea_ratio_item_dept_daily_salesq75,
-    hist_stockt.fea_ratio_item_dept_days_since_last_saleq25,
-    hist_stockt.fea_ratio_item_dept_days_since_last_saleq50,
-    hist_stockt.fea_ratio_item_dept_days_since_last_saleq75,
+    hist_stckt.fea_ratio_item_dept_days_since_last_saleq25,
+    hist_stckt.fea_ratio_item_dept_days_since_last_saleq50,
+    hist_stckt.fea_ratio_item_dept_days_since_last_saleq75,
   
     -- rolling sales features
     fea_item_monthly_sales,
