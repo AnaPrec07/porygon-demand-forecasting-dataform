@@ -30,7 +30,43 @@ WITH calendar_effect_on_sales AS (
     CASE WHEN cal.event_type_1 = 'Religious' OR cal.event_type_2 = 'Religious' THEN sales.daily_sales ELSE NULL END AS is_religious_event,
     CASE WHEN cal.event_type_1 = 'Religious' OR cal.event_type_2 = 'Religious' THEN NULL ELSE sales.daily_sales END AS is_not_religious_event,
     CASE WHEN cal.snap_CA = 1 THEN sales.daily_sales ELSE NULL END AS is_snap_ca,
-    CASE WHEN cal.snap_CA = 1 THEN NULL ELSE sales.daily_sales END AS is_not_snap_ca
+    CASE WHEN cal.snap_CA = 1 THEN NULL ELSE sales.daily_sales END AS is_not_snap_ca,
+    CASE WHEN cal.event_type_1 IN (
+          "Christmas",
+          "ValentinesDay",
+          "Mother’s day",
+          "Father’s day",
+          "Easter",
+          "Chanukah End",
+          "OrthodoxChristmas"
+    ) OR cal.event_type_2 IN (
+          "Christmas",
+          "ValentinesDay",
+          "Mother’s day",
+          "Father’s day",
+          "Easter",
+          "Chanukah End",
+          "OrthodoxChristmas"
+    )
+    THEN sales.daily_sales ELSE NULL END AS is_gift_driven_event,
+    CASE WHEN cal.event_type_1 IN (
+          "Christmas",
+          "ValentinesDay",
+          "Mother’s day",
+          "Father’s day",
+          "Easter",
+          "Chanukah End",
+          "OrthodoxChristmas"
+    ) OR cal.event_type_2 IN (
+          "Christmas",
+          "ValentinesDay",
+          "Mother’s day",
+          "Father’s day",
+          "Easter",
+          "Chanukah End",
+          "OrthodoxChristmas"
+    )
+    THEN NULL ELSE sales.daily_sales END AS is_not_gift_driven_event,
   FROM
     ${ref('daily_sales_melted')} sales
     LEFT JOIN ${ref('calendar')} cal
@@ -61,6 +97,10 @@ feature_ratios AS (
     AVG(is_snap_ca) AS feature_avg_sales_snap_ca,
     AVG(is_not_snap_ca) AS feature_avg_sales_not_snap_ca,
     SAFE_DIVIDE(AVG(is_snap_ca), AVG(is_not_snap_ca)) AS feature_ratio_avg_sales_snap_ca
+    -- gift driven event
+    AVG(is_gift_driven_event) AS feature_gift_driven_avg_sales,
+    AVG(is_not_gift_driven_event) AS feature_not_gift_driven_avg_sales,
+    SAFE_DIVIDE(AVG(is_gift_driven_event), AVG(is_not_gift_driven_event)) AS feature_ratio_avg_sales_gift_driven_event
   FROM calendar_effect_on_sales
   GROUP BY ctx_item_id, DATE_TRUNC(ctx_date, MONTH)
 ),
@@ -104,4 +144,8 @@ SELECT
   feature_avg_sales_not_snap_ca,
   feature_ratio_avg_sales_snap_ca,
   ${window_functions.generateRollAvgSTDEVPartition("feature_ratio_avg_sales_snap_ca")},
+  feature_gift_driven_avg_sales,
+  feature_not_gift_driven_avg_sales,
+  feature_ratio_avg_sales_gift_driven_event,
+  ${window_functions.generateRollAvgSTDEVPartition("feature_ratio_avg_sales_gift_driven_event")},
 FROM filter_stockouts_and_initialized_items fea

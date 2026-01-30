@@ -39,6 +39,28 @@ WITH intermediate_aggregations AS (
         THEN 1
       ELSE 0
     END is_religious_event,
+    CASE 
+      WHEN event_name_1 IN (
+          "Christmas",
+          "ValentinesDay",
+          "Mother’s day",
+          "Father’s day",
+          "Easter",
+          "Chanukah End",
+          "OrthodoxChristmas"
+      ) 
+        OR event_type_2 IN (
+          "Christmas",
+          "ValentinesDay",
+          "Mother’s day",
+          "Father’s day",
+          "Easter",
+          "Chanukah End",
+          "OrthodoxChristmas"
+        )
+        THEN 1
+      ELSE 0
+    END is_gift_driven_event,
   FROM ${ref("calendar")}
 ),
 events_at_monthly_level AS (
@@ -50,6 +72,7 @@ SELECT
   SUM(is_cultural_event) AS fea_is_cultural_event,
   SUM(is_national_event) AS fea_is_national_event,
   SUM(is_religious_event) AS fea_is_religious_event,
+  SUM(is_gift_driven_event) AS fea_is_gift_driven_event,
   fea_month_sin,
 FROM intermediate_aggregations
 GROUP BY 
@@ -83,5 +106,9 @@ SELECT
     ORDER BY ctx_date_month 
     ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
   ) AS fea_is_religious_event_3m,
+  SUM(fea_is_gift_driven_event) OVER (
+    ORDER BY ctx_date_month 
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
+  ) AS fea_is_gift_driven_event_3m,
   FROM events_at_monthly_level
 
