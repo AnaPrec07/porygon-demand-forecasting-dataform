@@ -151,7 +151,7 @@ config {
     cal_sales.feature_ratio_avg_sales_snap_ca_roll_count_12_months,
     cal_sales.feature_gift_driven_avg_sales,
     cal_sales.feature_not_gift_driven_avg_sales,
-    cal_sales.feature_ratio_avg_sales_gift_driven_event_avg_12_months,
+    cal_sales.feature_ratio_avg_sales_gift_driven_event_roll_avg_12_months,
 
     -- item longevity features
     long.fea_item_longevity_months,
