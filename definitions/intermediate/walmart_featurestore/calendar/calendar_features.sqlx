@@ -58,6 +58,7 @@ GROUP BY
 )
 SELECT
   ctx_date_month,
+  fea_is_religious_event,
   SUM(fea_is_weekend) OVER (
     ORDER BY ctx_date_month 
     ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING

@@ -49,11 +49,13 @@ config {
     enc.fea_dept_number,
 
     -- calendar features
+    cal.fea_is_religious_event,
     cal.fea_is_weekend_3m,
     cal.fea_is_event_3m,
     cal.fea_is_sporting_event_3m,
     cal.fea_is_cultural_event_3m,
     cal.fea_is_national_event_3m,
+    cal.fea_is_religious_event_3m,
 
     -- calendar sales features
     cal_sales.feature_avg_sales_sport_event,
