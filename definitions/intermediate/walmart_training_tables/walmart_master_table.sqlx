@@ -56,6 +56,7 @@ config {
     cal.fea_is_cultural_event_3m,
     cal.fea_is_national_event_3m,
     cal.fea_is_religious_event_3m,
+    cal.fea_is_gift_driven_event_3m,
 
     -- calendar sales features
     cal_sales.feature_avg_sales_sport_event,
@@ -148,7 +149,9 @@ config {
     cal_sales.feature_ratio_avg_sales_snap_ca_roll_min_12_months,
     cal_sales.feature_ratio_avg_sales_snap_ca_roll_max_12_months,
     cal_sales.feature_ratio_avg_sales_snap_ca_roll_count_12_months,
-
+    cal_sales.feature_gift_driven_avg_sales,
+    cal_sales.feature_not_gift_driven_avg_sales,
+    cal_sales.feature_ratio_avg_sales_gift_driven_event_avg_12_months,
 
     -- item longevity features
     long.fea_item_longevity_months,
