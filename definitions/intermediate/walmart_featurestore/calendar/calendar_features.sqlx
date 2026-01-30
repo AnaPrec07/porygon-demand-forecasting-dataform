@@ -49,7 +49,7 @@ WITH intermediate_aggregations AS (
           "Chanukah End",
           "OrthodoxChristmas"
       ) 
-        OR event_type_2 IN (
+        OR event_name_2 IN (
           "Christmas",
           "ValentinesDay",
           "Mother’s day",
