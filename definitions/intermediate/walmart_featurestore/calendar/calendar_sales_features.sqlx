@@ -96,7 +96,7 @@ feature_ratios AS (
     -- snap ca
     AVG(is_snap_ca) AS feature_avg_sales_snap_ca,
     AVG(is_not_snap_ca) AS feature_avg_sales_not_snap_ca,
-    SAFE_DIVIDE(AVG(is_snap_ca), AVG(is_not_snap_ca)) AS feature_ratio_avg_sales_snap_ca
+    SAFE_DIVIDE(AVG(is_snap_ca), AVG(is_not_snap_ca)) AS feature_ratio_avg_sales_snap_ca,
     -- gift driven event
     AVG(is_gift_driven_event) AS feature_gift_driven_avg_sales,
     AVG(is_not_gift_driven_event) AS feature_not_gift_driven_avg_sales,
