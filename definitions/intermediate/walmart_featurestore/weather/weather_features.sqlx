@@ -301,6 +301,7 @@ SELECT
   std_thunder AS fea_std_thunder,
   std_snow_ice_pellets AS fea_std_snow_ice_pellets,
   std_rain_drizzle AS fea_std_rain_drizzle,
+  FROM monthly_weather
 )
 SELECT 
   *,
