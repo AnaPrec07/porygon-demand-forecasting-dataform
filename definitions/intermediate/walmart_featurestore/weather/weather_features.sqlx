@@ -300,17 +300,5 @@ SELECT
   std_thunder AS fea_std_thunder,
   std_snow_ice_pellets AS fea_std_snow_ice_pellets,
   std_rain_drizzle AS fea_std_rain_drizzle,
-  -- generate avg timeseries
-  ${window_functions.generateRollAvgSTDEVPartition("fea_mean_temperature", "ctx_state_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_mean_dewp", "ctx_state_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_mean_visib", "ctx_state_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_mean_wdsp", "ctx_state_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_mean_prcp", "ctx_state_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_mean_gust", "ctx_state_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_mean_fog", "ctx_state_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_mean_tornado_funnel_cloud", "ctx_state_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_mean_thunder", "ctx_state_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_mean_snow_ice_pellets", "ctx_state_id")},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_mean_rain_drizzle", "ctx_state_id")},
 
 FROM monthly_weather
