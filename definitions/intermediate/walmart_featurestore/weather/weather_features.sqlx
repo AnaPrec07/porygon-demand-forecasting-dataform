@@ -303,7 +303,7 @@ SELECT
   std_rain_drizzle AS fea_std_rain_drizzle,
 )
 SELECT 
-  *
+  *,
   -- generate avg timeseries
   ${window_functions.generateRollAvgSTDEVPartition("fea_mean_temperature", "ctx_state_id")},
   ${window_functions.generateRollAvgSTDEVPartition("fea_mean_dewp", "ctx_state_id")},
