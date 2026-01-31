@@ -316,6 +316,5 @@ SELECT
   ${window_functions.generateRollAvgSTDEVPartition("fea_mean_thunder", "ctx_state_id")},
   ${window_functions.generateRollAvgSTDEVPartition("fea_mean_snow_ice_pellets", "ctx_state_id")},
   ${window_functions.generateRollAvgSTDEVPartition("fea_mean_rain_drizzle", "ctx_state_id")},
-  FROM features_no_ts
+FROM features_no_ts
 
-FROM monthly_weather
