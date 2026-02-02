@@ -1,0 +1,40 @@
+config {
+  type: "table",
+  schema: "walmart_targets_and_filters",
+  description: "Sampling indicator to select k random observations per ctx_item_id"
+}
+
+WITH table_keys AS (
+    SELECT 
+    DISTINCT 
+        tgt.ctx_item_id,
+        tgt.ctx_date_month
+
+    FROM ${ref("target_store_item_monthly")} tgt
+
+    -- join stockout filter
+    LEFT JOIN ${ref("stockout_filter")} stk
+        ON stk.ctx_date_month = tgt.ctx_date_month
+        AND stk.ctx_item_id = tgt.ctx_item_id
+        AND stk.ctx_store_id = tgt.ctx_store_id
+
+    -- join item longevity feature
+    LEFT JOIN ${ref("item_longevity_features")} long
+    ON long.ctx_date_month = tgt.ctx_date_month
+    AND long.ctx_item_id = tgt.ctx_item_id
+
+    -- apply filters
+    WHERE tgt.ctx_store_id = "CA_1"
+        AND stk.is_stockout_tgt = 0
+        AND long.fea_item_longevity_months >=3
+        AND stk.is_stockout_prev_3_m = 0
+)
+SELECT
+  *,
+  ROW_NUMBER() OVER (
+    PARTITION BY ctx_item_id 
+    ORDER BY RAND()
+  ) AS ctx_random_sampling_rank
+FROM table_keys
+
+

@@ -114,6 +114,13 @@ joined_ctex AS (
   fea_item_days_since_last_saleq75,
   fea_item_max_days_since_last_sale,
   de.* EXCEPT(ctx_date_month, ctx_dept_id, ctx_store_id),
+  -- create ratio features
+  SAFE_DIVIDE(fea_item_daily_salesq25, fea_dept_daily_salesq25) AS fea_ratio_item_dept_daily_salesq25,
+  SAFE_DIVIDE(fea_item_daily_salesq50, fea_dept_daily_salesq50) AS fea_ratio_item_dept_daily_salesq50,
+  SAFE_DIVIDE(fea_item_daily_salesq75, fea_dept_daily_salesq75) AS fea_ratio_item_dept_daily_salesq75,
+  SAFE_DIVIDE(fea_item_days_since_last_saleq25, fea_dept_days_since_last_saleq25) AS fea_ratio_item_dept_days_since_last_saleq25,
+  SAFE_DIVIDE(fea_item_days_since_last_saleq50, fea_dept_days_since_last_saleq50) AS fea_ratio_item_dept_days_since_last_saleq50,
+  SAFE_DIVIDE(fea_item_days_since_last_saleq75, fea_dept_days_since_last_saleq75) AS fea_ratio_item_dept_days_since_last_saleq75,
   FROM item_level it
   LEFT JOIN dept_level de
   ON it.ctx_date_month = de.ctx_date_month
